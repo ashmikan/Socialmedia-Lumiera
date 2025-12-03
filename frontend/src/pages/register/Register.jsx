@@ -22,8 +22,9 @@ const Register = () => {
             ✨ Share your moods, your moments, and your magic with Lumiera
           </p>
           <span>Do you have an account?</span>
-          
-          <button>Login</button>
+          <Link to="/login">
+            <button>Login</button>
+          </Link>
         </div>
       </div>
     </div>
