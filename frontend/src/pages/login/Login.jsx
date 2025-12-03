@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom"
 import "./Login.scss"
 
 const Login = () => {
@@ -8,13 +9,15 @@ const Login = () => {
                 <h1>Welcome to Lumiera!</h1>
                 <p>✨ Lumiera is where your vibe shines. Share moments, glow up your feed, and connect warmly with your people.</p>
                 <span>Don't you have an account?</span>
-                <button>Register</button>
+                <Link to="/register">
+                    <button>Register</button>
+                </Link>
             </div>
             <div className="right">
                 <h1>Login</h1>
                 <form>
-                    <input type="text" placeholder="Username" />
-                    <input type="password" placeholder="Password" />
+                    <input type="text" placeholder="Username" required/>
+                    <input type="password" placeholder="Password" required/>
                     <button>Login</button>
                 </form> 
             </div>
