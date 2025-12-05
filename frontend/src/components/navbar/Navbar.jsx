@@ -7,18 +7,25 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useContext } from 'react';
+import { DarkModeContext } from "../../context/darkModeContext";
 
 const Navbar = () => {
- return (
+  const { toggle } = useContext(DarkModeContext);
+  const navigate = useNavigate();
+
+  return (
     <div className="navbar">
       <div className="left">
         <Link to="/" style={{ textDecoration: "none" }}>
           <span>Lumiera</span>
         </Link>
-        <HomeOutlinedIcon />
-        <DarkModeOutlinedIcon />
-        <GridViewOutlinedIcon />
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <HomeOutlinedIcon className="icon" />
+        </Link>
+        <DarkModeOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} />
+        <GridViewOutlinedIcon className="icon" onClick={() => navigate("/explore")} style={{ cursor: "pointer" }} />
         <div className="search">
           <SearchOutlinedIcon />
           <input type="text" placeholder="Search..." />
@@ -26,10 +33,10 @@ const Navbar = () => {
       </div>
 
       <div className="right">
-        <PersonOutlinedIcon />
-        <EmailOutlinedIcon />
-        <NotificationsOutlinedIcon />
-        <div className="user">
+        <PersonOutlinedIcon className="icon" onClick={() => navigate("/profile/me")} style={{ cursor: "pointer" }} />
+        <EmailOutlinedIcon className="icon" onClick={() => navigate("/messages")} style={{ cursor: "pointer" }} />
+        <NotificationsOutlinedIcon className="icon" onClick={() => navigate("/notifications")} style={{ cursor: "pointer" }} />
+        <div className="user" onClick={() => navigate("/profile/me")} style={{ cursor: "pointer" }}>
           <img
             src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
             alt=""
