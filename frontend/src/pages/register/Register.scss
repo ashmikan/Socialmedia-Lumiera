@@ -136,13 +136,28 @@
 
     .left {
       flex: 1;
-      padding: 50px;
+      padding: 40px 50px ;
       display: flex;
       flex-direction: column;
-      gap: 50px;
+      gap: 30px;
       justify-content: center;
       background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
       border-radius: 20px 0 0 20px;
+
+      .logo-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: -30px;
+
+        .logo {
+          width: 120px;
+          height: 80px;
+          object-fit: contain;
+          filter: drop-shadow(0 4px 8px rgba(236, 149, 255, 0.2));
+          animation: float 3s ease-in-out infinite;
+        }
+      }
 
       h1 {
         color: #333;
