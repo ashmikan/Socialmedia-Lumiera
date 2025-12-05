@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
 import "./Login.scss"
+import logo from "../../assets/logo.png"
 
 const Login = () => {
   return (
@@ -14,6 +15,9 @@ const Login = () => {
                 </Link>
             </div>
             <div className="right">
+                <div className="logo-container">
+                    <img src={logo} alt="Lumiera Logo" className="logo" />
+                </div>
                 <h1>Login</h1>
                 <form>
                     <input type="text" placeholder="Username" required/>
