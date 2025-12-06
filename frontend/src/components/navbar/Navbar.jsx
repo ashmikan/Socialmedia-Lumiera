@@ -13,7 +13,7 @@ import { DarkModeContext } from "../../context/darkModeContext";
 import logo from "../../assets/logo.png";
 
 const Navbar = () => {
-  const { toggle } = useContext(DarkModeContext);
+  const { toggle, darkMode } = useContext(DarkModeContext);
   const navigate = useNavigate();
 
   return (
@@ -25,7 +25,7 @@ const Navbar = () => {
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <HomeOutlinedIcon className="icon" />
         </Link>
-        <DarkModeOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} />
+        {darkMode ? <WbSunnyOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} /> : <DarkModeOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} />}
         <GridViewOutlinedIcon className="icon" onClick={() => navigate("/explore")} style={{ cursor: "pointer" }} />
         <div className="search">
           <SearchOutlinedIcon />
