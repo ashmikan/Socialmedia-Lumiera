@@ -10,6 +10,7 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from 'react';
 import { DarkModeContext } from "../../context/darkModeContext";
+import logo from "../../assets/logo.png";
 
 const Navbar = () => {
   const { toggle } = useContext(DarkModeContext);
@@ -18,8 +19,8 @@ const Navbar = () => {
   return (
     <div className="navbar">
       <div className="left">
-        <Link to="/" style={{ textDecoration: "none" }}>
-          <span>Lumiera</span>
+        <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
+          <img src={logo} alt="Lumiera Logo" className="logoImage" />
         </Link>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <HomeOutlinedIcon className="icon" />
