@@ -1,5 +1,6 @@
 import "./Home.scss"
-import logo from "../../assets/logo.png"
+import Stories from "../../components/stories/Stories"
+import Posts from "../../components/posts/Posts"
 
 const Home = () => {
   return (
@@ -9,7 +10,8 @@ const Home = () => {
         <p>Share your moments, connect with friends, and glow up your feed!</p>
       </div>
       <div className="homeContent">
-        {/* Feed will go here */}
+        <Stories />
+        <Posts />
       </div>
     </div>
   )
