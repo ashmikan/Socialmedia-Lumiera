@@ -10,21 +10,24 @@ import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link, useNavigate } from "react-router-dom";
 import { useContext } from 'react';
 import { DarkModeContext } from "../../context/darkModeContext";
+import { AuthContext } from "../../context/authContext";
+import logo from "../../assets/logo.png";
 
 const Navbar = () => {
-  const { toggle } = useContext(DarkModeContext);
+  const { toggle, darkMode } = useContext(DarkModeContext);
   const navigate = useNavigate();
+  const { currentUser } = useContext(AuthContext);
 
   return (
     <div className="navbar">
       <div className="left">
-        <Link to="/" style={{ textDecoration: "none" }}>
-          <span>Lumiera</span>
+        <Link to="/" style={{ textDecoration: "none", display: "flex", alignItems: "center", gap: "10px" }}>
+          <img src={logo} alt="Lumiera Logo" className="logoImage" />
         </Link>
         <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
           <HomeOutlinedIcon className="icon" />
         </Link>
-        <DarkModeOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} />
+        {darkMode ? <WbSunnyOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} /> : <DarkModeOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} />}
         <GridViewOutlinedIcon className="icon" onClick={() => navigate("/explore")} style={{ cursor: "pointer" }} />
         <div className="search">
           <SearchOutlinedIcon />
@@ -38,10 +41,10 @@ const Navbar = () => {
         <NotificationsOutlinedIcon className="icon" onClick={() => navigate("/notifications")} style={{ cursor: "pointer" }} />
         <div className="user" onClick={() => navigate("/profile/me")} style={{ cursor: "pointer" }}>
           <img
-            src="https://images.pexels.com/photos/4881619/pexels-photo-4881619.jpeg?auto=compress&cs=tinysrgb&w=1600"
+            src={currentUser.profilePic}
             alt=""
           />
-          <span>Windy</span>
+          <span>{currentUser.name}</span>
         </div>
       </div>
     </div>

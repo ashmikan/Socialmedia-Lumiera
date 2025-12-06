@@ -148,11 +148,12 @@
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: -30px;
+        margin-bottom: -60px;
+        margin-top: -50px;
 
         .logo {
-          width: 120px;
-          height: 80px;
+          width: 200px;
+          height: 160px;
           object-fit: contain;
           filter: drop-shadow(0 4px 8px rgba(236, 149, 255, 0.2));
           animation: float 3s ease-in-out infinite;
