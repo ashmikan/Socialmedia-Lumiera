@@ -7,7 +7,7 @@ import TwitterIcon from "@mui/icons-material/Twitter";
 import PlaceIcon from "@mui/icons-material/Place";
 import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
-
+import Posts from "../../components/posts/Posts"
 
 const Profile = () => {
   return (
@@ -58,7 +58,7 @@ const Profile = () => {
             <MoreVertIcon />
           </div>
         </div>
-      
+      <Posts/>
       </div>
     </div>
   )
