@@ -6,7 +6,10 @@
   height: 200px;
   margin-bottom: 30px;
 
-  
+  @include mobile{
+    height: 70px;
+    justify-content: space-between;
+  }
 
   .story {
     flex: 1;
@@ -14,6 +17,12 @@
     overflow: hidden;
     position: relative;
 
+    @include mobile{
+      flex: none;
+      width: 70px;
+      height: 70px;
+      border-radius: 50%;
+    }
    
 
     img {
@@ -47,7 +56,10 @@
       align-items: center;
       justify-content: center;
 
-      
+      @include mobile{
+        left: 20px;
+        bottom: 30px;
+      } 
     }
   }
 }
