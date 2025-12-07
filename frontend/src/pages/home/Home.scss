@@ -9,6 +9,10 @@
       padding: 10px;
     }
 
+    @include tablet{
+      padding: 20px;
+    }
+
     .homeHeader {
       display: flex;
       flex-direction: column;
@@ -21,6 +25,10 @@
       box-shadow: 0px 0px 15px 1px rgba(0, 0, 0, 0.09);
 
       @include mobile{
+        display: none;
+      }
+
+      @include tablet{
         display: none;
       }
 

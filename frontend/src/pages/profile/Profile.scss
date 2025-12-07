@@ -28,12 +28,18 @@
       }
     }
     .profileContainer {
-      padding: 20px 70px;
+       padding: 20px 70px;
 
-      @include mobile {
+        @include mobile {
             padding: 10px;
             
         }
+
+        @include tablet {
+            padding: 20px;      
+        }
+
+
       
 
       .uInfo {
@@ -63,6 +69,10 @@
           display: flex;
           gap: 10px;
           transition: transform 0.3s ease;
+
+          @include tablet {
+            flex-wrap: wrap;
+          }
 
           &:hover {
             transform: translateX(5px);
