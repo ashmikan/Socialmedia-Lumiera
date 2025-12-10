@@ -1,5 +1,6 @@
 import { db } from "../connect.js";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 export const register = (req, res) => {
 
@@ -20,7 +21,7 @@ export const register = (req, res) => {
 
             const values = [ req.body.username, req.body.email, hashedPassword, req.body.name ];
             
-            db.query(q, [values], {err, data} => {
+            db.query(q, [values], (err, data) => {
                 if (err) return res.status(500).json(err);
                 return res.status(200).json("User has been created.");
             });
@@ -41,11 +42,11 @@ export const login = (req, res) => {
 
         const token = jwt.sign({id: data[0].id}, "secretkey");
 
-        const { password, ...other } = data[0];
+        const { password, ...others } = data[0];
 
         res.cookie("access_token", token, {
             httpOnly: true,
-        }).status(200).json(others)
+        }).status(200).json(others);
     });
 }
 
