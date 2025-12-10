@@ -4,7 +4,7 @@ import logo from "../../assets/logo.png"
 import { AuthContext } from "../../context/authContext";
 import { useContext } from 'react';
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
 
@@ -13,9 +13,11 @@ const Login = () => {
         password: "",
       });
     
-      const [err, setErr] = useState(null);
+    const [err, setErr] = useState(null);
+
+    const navigate = useNavigate();
     
-      const handleChange = (e) => {
+    const handleChange = (e) => {
         setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
       };
 
@@ -25,6 +27,7 @@ const Login = () => {
     e.preventDefault();
     try{
         await login(inputs);
+        navigate("/");
     }catch(err){
         setErr(err.response.data);
     }
