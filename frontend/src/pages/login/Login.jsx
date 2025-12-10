@@ -3,13 +3,31 @@ import "./Login.scss"
 import logo from "../../assets/logo.png"
 import { AuthContext } from "../../context/authContext";
 import { useContext } from 'react';
+import { useState } from "react";
+
 
 const Login = () => {
 
+    const [inputs, setInputs] = useState({
+        username: "",
+        password: "",
+      });
+    
+      const [err, setErr] = useState(null);
+    
+      const handleChange = (e) => {
+        setInputs(prev => ({ ...prev, [e.target.name]: e.target.value }));
+      };
+
   const {login} = useContext(AuthContext);
 
-  const handleLogin = () => {
-    login();
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    try{
+        await login(inputs);
+    }catch(err){
+        setErr(err.response.data);
+    }
   }
 
   return (
@@ -29,8 +47,9 @@ const Login = () => {
                 </div>
                 <h1>Login</h1>
                 <form>
-                    <input type="text" placeholder="Username" required/>
-                    <input type="password" placeholder="Password" required/>
+                    <input type="text" placeholder="Username" name="username" onChange={handleChange} required/>
+                    <input type="password" placeholder="Password" name="password" onChange={handleChange} required/>
+                    {err && <span className="error">{err.message}</span>}
                     <button onClick={handleLogin}>Login</button>
                 </form> 
             </div>
