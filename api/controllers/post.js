@@ -1,14 +1,12 @@
+import { db } from "../connect.js";
+
 export const getPosts = (req, res) => {
-  // TODO: Implement get posts logic
-  res.status(200).json({ message: "Get posts endpoint" });
+  const q = `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)`;
+
+    db.query(q, (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.status(200).json(data);
+     })    
 };
 
-export const addPost = (req, res) => {
-  // TODO: Implement add post logic
-  res.status(200).json({ message: "Add post endpoint" });
-};
 
-export const deletePost = (req, res) => {
-  // TODO: Implement delete post logic
-  res.status(200).json({ message: "Delete post endpoint" });
-};
