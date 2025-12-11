@@ -26,6 +26,7 @@ const Share = () => {
 
   const queryClient = useQueryClient();
 
+
   const mutation = useMutation({
     mutationFn: (newPost) => {
       return makeRequest.post("/posts", newPost);
@@ -36,6 +37,7 @@ const Share = () => {
     },
   });
 
+  
   const handleClick = async (e) => {
     e.preventDefault();
     let imgUrl = "";
