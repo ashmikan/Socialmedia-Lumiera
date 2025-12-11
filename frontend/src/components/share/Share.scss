@@ -85,11 +85,20 @@
         .right {
           button {
             border: none;
-            padding: 5px;
+            background-color: #43b4d6;
             color: white;
+            padding: 10px 14px;
+            border-radius: 10px;
             cursor: pointer;
-            background-color: #5271ff;
-            border-radius: 3px;
+            font-size: 13px;
+            font-weight: 550;
+            transition: all 0.3s ease;
+
+            &:hover {
+                  background: linear-gradient(135deg, #c02e99 0%, #711578 100%);
+                  transform: translateY(-2px);
+                  box-shadow: 0 4px 12px rgba(44, 133, 215, 0.4);
+            }
           }
         }
       }
