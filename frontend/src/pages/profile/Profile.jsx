@@ -26,7 +26,7 @@ const Profile = () => {
       makeRequest.get("/users/find/"+userId).then((res) => {
         return res.data;
       }),
-    
+    enabled: !!userId
   });
 
   const { isLoading: rIsLoading, data: relationshipData } = useQuery({
@@ -35,6 +35,7 @@ const Profile = () => {
       makeRequest.get("/relationships?followedUserId="+ userId).then((res) => {
         return res.data;
       }),
+    enabled: !!userId && currentUser?.id !== parseInt(userId)
   });
 
   const queryClient = useQueryClient();
@@ -96,11 +97,11 @@ const Profile = () => {
                 <span>{data?.city}</span>
               </div>
             </div>
-            {rIsLoading ? "loading" : userId === currentUser.id ? (
+            {rIsLoading ? "loading" : currentUser?.id === parseInt(userId) ? (
               <button>Update</button>
             ) : (
               <button onClick={handleFollow}>{relationshipData?.includes(currentUser.id) ? "Following" : "Follow"}</button>
-          )}
+            )}
           </div>
           <div className="right">
             <EmailOutlinedIcon />
