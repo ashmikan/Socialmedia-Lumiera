@@ -26,10 +26,33 @@ const Profile = () => {
       makeRequest.get("/users/find/"+userId).then((res) => {
         return res.data;
       }),
-    enabled: !!userId
+    
   });
 
-  console.log(data)
+  const { isLoading: rIsLoading, data: relationshipData } = useQuery({
+    queryKey: ["relationship", userId],
+    queryFn: () =>
+      makeRequest.get("/relationships?followedUserId="+ userId).then((res) => {
+        return res.data;
+      }),
+  });
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (Following) => {
+      if(Following) return makeRequest.delete("/relationships?userId="+ userId);
+      return makeRequest.post("/relationships", {userId});  
+    },
+    onSuccess: () => {
+      // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["relationship"] });
+    },
+  });
+
+  const handleFollow = () => {
+    mutation.mutate(relationshipData.includes(currentUser.id))
+  }
 
 
   return (
@@ -73,7 +96,11 @@ const Profile = () => {
                 <span>{data?.city}</span>
               </div>
             </div>
-            <button>Follow</button>
+            {rIsLoading ? "loading" : userId === currentUser.id ? (
+              <button>Update</button>
+            ) : (
+              <button onClick={handleFollow}>{relationshipData?.includes(currentUser.id) ? "Following" : "Follow"}</button>
+          )}
           </div>
           <div className="right">
             <EmailOutlinedIcon />
