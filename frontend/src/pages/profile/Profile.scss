@@ -135,17 +135,17 @@
           }
           button {
             border: none;
-            background-color: #1d8cae;
+            background-color: #48b2d2;
             color: white;
             padding: 10px 14px;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 13px;
             font-weight: 600;
             transition: all 0.3s ease;
 
             &:hover {
-                  background: linear-gradient(135deg, #1f5fa8 0%, #154078 100%);
+                  background: linear-gradient(135deg, #e645a3 0%, #a025b3 100%);
                   transform: translateY(-2px);
                   box-shadow: 0 4px 12px rgba(44, 133, 215, 0.4);
             }
