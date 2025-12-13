@@ -13,8 +13,11 @@ import { makeRequest } from "../../axios";
 import { useLocation } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/authContext";
+import Update from "../../components/update/Update";
+import {useState} from "react";
 
 const Profile = () => {
+  const [openUpdate, setOpenUpdate] = useState(false);
 
   const { currentUser } = useContext(AuthContext);
   const urlUserId = useLocation().pathname.split("/")[2];
@@ -60,12 +63,12 @@ const Profile = () => {
     <div className="profile">
       <div className="images">
         <img
-          src={data?.coverPic}
+          src={"/upload/"+data?.coverPic}
           alt=""
           className="cover"
         />
         <img
-          src={data?.profilePic}
+          src={"/upload/"+data?.profilePic}
           alt=""
           className="profilePic"
         />
@@ -98,7 +101,7 @@ const Profile = () => {
               </div>
             </div>
             {rIsLoading ? "loading" : currentUser?.id === parseInt(userId) ? (
-              <button>Update</button>
+              <button onClick={ () => setOpenUpdate (true) }>Update</button>
             ) : (
               <button onClick={handleFollow}>{relationshipData?.includes(currentUser.id) ? "Following" : "Follow"}</button>
             )}
@@ -110,6 +113,7 @@ const Profile = () => {
         </div>
       <Posts userId={userId} />
       </div>
+      {openUpdate && <Update setOpenUpdate={setOpenUpdate} user={data} />}
     </div>
   )
 }
