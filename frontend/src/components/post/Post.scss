@@ -16,6 +16,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
+        position: relative;
 
         .userInfo {
           display: flex;
@@ -42,8 +43,37 @@
             }
           }
         }
+        
         .MoreHorizIcon {
           cursor: pointer;
+        }
+
+        button {
+          position: absolute;
+          top: 50px;
+          right: 0;
+          border: none;
+          background-color: #f04f7a;
+          color: white;
+          padding: 8px 14px;
+          border-radius: 8px;
+          cursor: pointer;
+          font-size: 13px;
+          font-weight: 600;
+          transition: all 0.25s ease;
+          z-index: 10;
+          box-shadow: 0 2px 8px rgba(240, 84, 79, 0.3);
+
+          &:hover {
+            background-color: #ef0e4a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(240, 84, 79, 0.45);
+          }
+
+          &:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 6px rgba(240, 84, 79, 0.35);
+          }
         }
       }
 
