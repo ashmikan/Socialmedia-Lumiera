@@ -65,7 +65,16 @@ const Post = ({ post }) => {
         <div className="container">
             <div className="user">
                 <div className="userInfo">
-                    <img src={post.profilePic} alt=""/>
+                    <img
+                      src={
+                        post.profilePic
+                          ? (post.profilePic.startsWith("/upload/") || post.profilePic.startsWith("http")
+                              ? post.profilePic
+                              : "/upload/" + post.profilePic)
+                          : ""
+                      }
+                      alt=""
+                    />
                     <div className="details">
                         <Link to={`/profile/${post.userId}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <span className="name">{post.name}</span>
