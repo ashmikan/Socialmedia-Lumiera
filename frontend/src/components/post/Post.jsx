@@ -51,12 +51,26 @@ const Post = ({ post }) => {
     },
   });
 
+  const shareMutation = useMutation({
+    mutationFn: (newPost) => {
+      return makeRequest.post("/posts", newPost);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    },
+  });
+
   const handleLike = () => {
     mutation.mutate(data.includes(currentUser.id))
   }
 
   const handleDelete = () => {
     deleteMutation.mutate(post.id)
+  }
+
+  const handleShare = () => {
+    const sharedDesc = post.desc ? `Reshared: ${post.desc}` : "";
+    shareMutation.mutate({ desc: sharedDesc, img: post.img });
   }
 
     
@@ -106,9 +120,9 @@ const Post = ({ post }) => {
                     <TextsmsOutlinedIcon />
                     {data?.length ?? 0} Comments
                 </div>
-                <div className="item">
-                    <ShareOutlinedIcon />
-                    Share
+                <div className="item" onClick={handleShare} style={{ cursor: "pointer" }}>
+                  <ShareOutlinedIcon />
+                  Share
                 </div>
             </div>
             {commentOpen && <Comments postId={post.id}/>}
