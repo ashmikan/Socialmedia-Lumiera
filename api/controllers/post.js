@@ -13,14 +13,18 @@ export const getPosts = (req, res) => {
 
     console.log(userId)
 
-    const q = 
-    userId !== "undefined"
-    ? `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.createdAt DESC` 
-    : `SELECT p.*, u.id AS userId, name, profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
-    LEFT JOIN relationships AS r ON (p.userId = r.followedUserId) WHERE r.followerUserId= ? OR p.userId =?
-    ORDER BY p.createdAt DESC`;
+    // If a specific userId is requested, return that user's posts.
+    // Otherwise return posts by the current user or posts from users the current user follows.
+    const q = userId !== "undefined"
+      ? `SELECT p.*, u.id AS userId, u.name, u.profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.userId = ? ORDER BY p.createdAt DESC`
+      : `SELECT p.*, u.id AS userId, u.name, u.profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId)
+         WHERE p.userId = ?
+         OR EXISTS (
+           SELECT 1 FROM relationships r WHERE r.followedUserId = p.userId AND r.followerUserId = ?
+         )
+         ORDER BY p.createdAt DESC`;
 
-    const values = userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id]
+    const values = userId !== "undefined" ? [userId] : [userInfo.id, userInfo.id];
 
     db.query(q, values, (err, data) => {
             if (err) return res.status(500).json(err);
