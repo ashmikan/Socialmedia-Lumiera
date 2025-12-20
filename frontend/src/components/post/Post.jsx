@@ -105,6 +105,17 @@ const Post = ({ post }) => {
                 <p>{post.desc}</p>
                 <img src={"/upload/" + post.img} alt=""/>
             </div>
+            {post.taggedUsers && post.taggedUsers.length > 0 && (
+              <div className="tagged">
+                <span>With </span>
+                {post.taggedUsers.map((u, idx) => (
+                  <span key={u.id} style={{ marginRight: 6 }}>
+                    <Link to={`/profile/${u.id}`} style={{ textDecoration: "none", color: "inherit" }}>{u.name}</Link>
+                    {idx < post.taggedUsers.length - 1 ? ", " : ""}
+                  </span>
+                ))}
+              </div>
+            )}
             <div className="info">
                 <div className="item">
                     {isLoading ? (

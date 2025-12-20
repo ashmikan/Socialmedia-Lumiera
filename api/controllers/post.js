@@ -24,7 +24,19 @@ export const getPosts = (req, res) => {
 
     db.query(q, values, (err, data) => {
             if (err) return res.status(500).json(err);
-            return res.status(200).json(data);
+            if (!data || data.length === 0) return res.status(200).json([]);
+            const postIds = data.map((p) => p.id);
+            const tagsQ = `SELECT pt.postId, u.id, u.name, u.profilePic FROM posttags pt JOIN users u ON u.id = pt.userId WHERE pt.postId IN (?)`;
+            db.query(tagsQ, [postIds], (err2, tagsData) => {
+              if (err2) return res.status(500).json(err2);
+              const tagsMap = {};
+              tagsData.forEach((t) => {
+                if (!tagsMap[t.postId]) tagsMap[t.postId] = [];
+                tagsMap[t.postId].push({ id: t.id, name: t.name, profilePic: t.profilePic });
+              });
+              const postsWithTags = data.map((post) => ({ ...post, taggedUsers: tagsMap[post.id] || [] }));
+              return res.status(200).json(postsWithTags);
+            });
     })
   })    
 };
@@ -35,6 +47,23 @@ export const addPost = (req, res) => {
 
   jwt.verify(token, "secretkey", (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
+    console.log('addPost body (raw):', req.body);
+    // Normalize taggedUsers: accept array or JSON string, coerce to numbers and filter invalid
+    let tagged = [];
+    if (req.body.taggedUsers) {
+      if (typeof req.body.taggedUsers === "string") {
+        try {
+          tagged = JSON.parse(req.body.taggedUsers);
+        } catch (e) {
+          // maybe comma separated
+          tagged = req.body.taggedUsers.split(",").map((s) => s.trim());
+        }
+      } else if (Array.isArray(req.body.taggedUsers)) {
+        tagged = req.body.taggedUsers;
+      }
+      tagged = tagged.map((id) => Number(id)).filter((id) => !Number.isNaN(id));
+    }
+    console.log('addPost body (normalized tagged):', tagged);
 
     const q = "INSERT INTO posts (`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
 
@@ -47,7 +76,17 @@ export const addPost = (req, res) => {
 
     db.query(q, [values], (err, data) => {
             if (err) return res.status(500).json(err);
-            return res.status(200).json("Post has been created.");
+            const postId = data.insertId;
+            if (tagged && Array.isArray(tagged) && tagged.length > 0) {
+              const tagsValues = tagged.map((uid) => [postId, uid]);
+              const qt = "INSERT INTO posttags (`postId`, `userId`) VALUES ?";
+              db.query(qt, [tagsValues], (err2) => {
+                if (err2) return res.status(500).json(err2);
+                return res.status(200).json({ message: "Post has been created.", postId });
+              });
+            } else {
+              return res.status(200).json({ message: "Post has been created.", postId });
+            }
     })
   })    
 };
