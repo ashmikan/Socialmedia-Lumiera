@@ -4,12 +4,14 @@ import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { makeRequest } from "../../axios";
 
 const Share = () => {
   const [file, setFile] = useState(null);
   const [desc, setDesc] = useState("");
+  const [taggedUsers, setTaggedUsers] = useState([]);
+  const [showTagPicker, setShowTagPicker] = useState(false);
 
   const upload = async () => {
     try {
@@ -26,6 +28,24 @@ const Share = () => {
 
   const queryClient = useQueryClient();
 
+  const { data: followerIds = [] } = useQuery({
+    queryKey: ["followers", currentUser?.id],
+    queryFn: () => makeRequest.get("/relationships?followedUserId=" + currentUser.id).then((res) => res.data),
+    enabled: !!currentUser?.id,
+  });
+
+  const { data: followerUsers = [] } = useQuery({
+    queryKey: ["followerUsers", followerIds],
+    queryFn: async () => {
+      if (!followerIds || followerIds.length === 0) return [];
+      const users = await Promise.all(
+        followerIds.map((id) => makeRequest.get("/users/find/" + id).then((res) => res.data))
+      );
+      return users;
+    },
+    enabled: followerIds?.length > 0,
+  });
+
 
   const mutation = useMutation({
     mutationFn: (newPost) => {
@@ -40,12 +60,37 @@ const Share = () => {
   
   const handleClick = async (e) => {
     e.preventDefault();
+    if (!currentUser || !currentUser.id) {
+      alert("You must be logged in to share.");
+      return;
+    }
     let imgUrl = "";
     if (file) imgUrl = await upload();
-    mutation.mutate({ desc, img: imgUrl });
+    const safeTagged = (taggedUsers || [])
+      .map((id) => (id == null ? id : Number(id)))
+      .filter((id) => id !== null && id !== undefined && !Number.isNaN(id));
+    const payload = { desc, img: imgUrl };
+    if (safeTagged.length > 0) payload.taggedUsers = safeTagged;
+    console.log("POST /posts payload", payload, "currentUser:", currentUser);
+    mutation.mutate(payload);
     setDesc("");
     setFile(null);
+    setShowTagPicker(false);
   };
+
+  const toggleTag = (userId) => {
+    const idNum = userId == null ? userId : Number(userId);
+    setTaggedUsers((prev) =>
+      prev.includes(idNum) ? prev.filter((id) => id !== idNum) : [...prev, idNum]
+    );
+  };
+
+  // derive a normalized followerUsers list (ensure id exists)
+  const normFollowers = (followerUsers || []).map((u) => ({
+    id: u?.id ?? u?.userId ?? null,
+    name: u?.name ?? "Unknown",
+    profilePic: u?.profilePic ?? null,
+  }));
 
   return (
     <div className="share">
@@ -66,6 +111,32 @@ const Share = () => {
             )}
           </div>
         </div>
+        {showTagPicker && normFollowers?.length > 0 && (
+          <div className="tag-friends">
+            <label>Tag friends:</label>
+            <div className="friends-list">
+              {normFollowers.map((u) => (
+                <label key={u.id ?? Math.random()} style={{ marginRight: 8 }}>
+                  <input
+                    type="checkbox"
+                    checked={u.id != null && taggedUsers.includes(Number(u.id))}
+                    onChange={() => toggleTag(u.id)}
+                  />
+                  <img
+                    src={
+                      u.profilePic
+                        ? (u.profilePic.startsWith("/upload/") ? u.profilePic : "/upload/" + u.profilePic)
+                        : Friend
+                    }
+                    alt=""
+                    style={{ width: 24, height: 24, borderRadius: "50%", marginLeft: 6, marginRight: 6 }}
+                  />
+                  <span>{u.name || "Unknown"}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        )}
         <hr />
         <div className="bottom">
           <div className="left">
@@ -85,7 +156,7 @@ const Share = () => {
               <img src={Map} alt="" />
               <span>Add Place</span>
             </div>
-            <div className="item">
+            <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowTagPicker((s) => !s)}>
               <img src={Friend} alt="" />
               <span>Tag Friends</span>
             </div>
