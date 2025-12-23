@@ -69,29 +69,51 @@ export const addPost = (req, res) => {
     }
     console.log('addPost body (normalized tagged):', tagged);
 
-    const q = "INSERT INTO posts (`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
+    const trimmedPlace = (req.body.place || "").trim();
+    const createdAt = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
 
-    const values = [
-      req.body.desc,
-      req.body.img,
-      moment(Date.now()).format("YYYY-MM-DD HH:mm:ss"),
-      userInfo.id,
-    ]
+    const insertWithPlace = () => {
+      const q = "INSERT INTO posts (`desc`, `img`, `place`, `createdAt`, `userId`) VALUES (?)";
+      const values = [req.body.desc, req.body.img, trimmedPlace, createdAt, userInfo.id];
+      db.query(q, [values], (err, data) => {
+        if (err) {
+          // If unknown column 'place' (ER_BAD_FIELD_ERROR), fallback to legacy insert
+          if (err?.code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+            return insertLegacy();
+          }
+          return res.status(500).json(err);
+        }
+        return handleTagsAndRespond(data.insertId);
+      });
+    };
 
-    db.query(q, [values], (err, data) => {
-            if (err) return res.status(500).json(err);
-            const postId = data.insertId;
-            if (tagged && Array.isArray(tagged) && tagged.length > 0) {
-              const tagsValues = tagged.map((uid) => [postId, uid]);
-              const qt = "INSERT INTO posttags (`postId`, `userId`) VALUES ?";
-              db.query(qt, [tagsValues], (err2) => {
-                if (err2) return res.status(500).json(err2);
-                return res.status(200).json({ message: "Post has been created.", postId });
-              });
-            } else {
-              return res.status(200).json({ message: "Post has been created.", postId });
-            }
-    })
+    const insertLegacy = () => {
+      const q = "INSERT INTO posts (`desc`, `img`, `createdAt`, `userId`) VALUES (?)";
+      const values = [req.body.desc, req.body.img, createdAt, userInfo.id];
+      db.query(q, [values], (err, data) => {
+        if (err) return res.status(500).json(err);
+        return handleTagsAndRespond(data.insertId);
+      });
+    };
+
+    const handleTagsAndRespond = (postId) => {
+      if (tagged && Array.isArray(tagged) && tagged.length > 0) {
+        const tagsValues = tagged.map((uid) => [postId, uid]);
+        const qt = "INSERT INTO posttags (`postId`, `userId`) VALUES ?";
+        db.query(qt, [tagsValues], (err2) => {
+          if (err2) return res.status(500).json(err2);
+          return res.status(200).json({ message: "Post has been created.", postId });
+        });
+      } else {
+        return res.status(200).json({ message: "Post has been created.", postId });
+      }
+    };
+
+    if (trimmedPlace) {
+      insertWithPlace();
+    } else {
+      insertLegacy();
+    }
   })    
 };
 

@@ -12,6 +12,8 @@ const Share = () => {
   const [desc, setDesc] = useState("");
   const [taggedUsers, setTaggedUsers] = useState([]);
   const [showTagPicker, setShowTagPicker] = useState(false);
+  const [place, setPlace] = useState("");
+  const [showPlaceInput, setShowPlaceInput] = useState(false);
 
   const upload = async () => {
     try {
@@ -70,12 +72,16 @@ const Share = () => {
       .map((id) => (id == null ? id : Number(id)))
       .filter((id) => id !== null && id !== undefined && !Number.isNaN(id));
     const payload = { desc, img: imgUrl };
+    const trimmedPlace = (place || "").trim();
+    if (trimmedPlace.length > 0) payload.place = trimmedPlace;
     if (safeTagged.length > 0) payload.taggedUsers = safeTagged;
     console.log("POST /posts payload", payload, "currentUser:", currentUser);
     mutation.mutate(payload);
     setDesc("");
     setFile(null);
     setShowTagPicker(false);
+    setPlace("");
+    setShowPlaceInput(false);
   };
 
   const toggleTag = (userId) => {
@@ -137,6 +143,18 @@ const Share = () => {
             </div>
           </div>
         )}
+        {showPlaceInput && (
+          <div className="place-input" style={{ padding: "8px 0" }}>
+            <label style={{ marginRight: 8 }}>Add place:</label>
+            <input
+              type="text"
+              placeholder="Where are you?"
+              value={place}
+              onChange={(e) => setPlace(e.target.value)}
+              style={{ flex: 1, padding: 8 }}
+            />
+          </div>
+        )}
         <hr />
         <div className="bottom">
           <div className="left">
@@ -152,7 +170,7 @@ const Share = () => {
                 <span>Add Image</span>
               </div>
             </label>
-            <div className="item">
+            <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowPlaceInput((s) => !s)}>
               <img src={Map} alt="" />
               <span>Add Place</span>
             </div>

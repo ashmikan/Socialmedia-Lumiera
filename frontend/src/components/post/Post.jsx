@@ -6,6 +6,7 @@ import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Comments from "../comments/Comments";
+import MapIcon from "../../assets/map.png";
 import { useState } from "react";
 import moment from "moment";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -93,6 +94,13 @@ const Post = ({ post }) => {
                         <Link to={`/profile/${post.userId}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <span className="name">{post.name}</span>
                         </Link>
+
+                        {post.place && (
+                          <span className="place" >
+                            <span>{post.place}</span>
+                          </span>
+                        )}
+
                         <span className="date"> {moment(post.createdAt).fromNow()} </span>
                     </div>
                 </div>
