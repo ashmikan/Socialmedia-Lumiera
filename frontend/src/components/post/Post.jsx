@@ -94,13 +94,13 @@ const Post = ({ post }) => {
                         <Link to={`/profile/${post.userId}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <span className="name">{post.name}</span>
                         </Link>
-                        
+
                         {post.place && (
-                          <span className="place" style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                            <span>is at {post.place}</span>
+                          <span className="place" >
+                            <span>{post.place}</span>
                           </span>
                         )}
-                        
+
                         <span className="date"> {moment(post.createdAt).fromNow()} </span>
                     </div>
                 </div>
