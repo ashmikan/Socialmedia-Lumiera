@@ -144,14 +144,13 @@ const Share = () => {
           </div>
         )}
         {showPlaceInput && (
-          <div className="place-input" style={{ padding: "8px 0" }}>
-            <label style={{ marginRight: 8 }}>Add place:</label>
+          <div className="place-input">
+            <label>Add place:</label>
             <input
               type="text"
               placeholder="Where are you?"
               value={place}
               onChange={(e) => setPlace(e.target.value)}
-              style={{ flex: 1, padding: 8 }}
             />
           </div>
         )}
