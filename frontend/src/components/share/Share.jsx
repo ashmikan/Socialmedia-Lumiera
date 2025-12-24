@@ -14,6 +14,8 @@ const Share = () => {
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [place, setPlace] = useState("");
   const [showPlaceInput, setShowPlaceInput] = useState(false);
+  const [feeling, setFeeling] = useState("");
+  const [showFeelingInput, setShowFeelingInput] = useState(false);
 
   const upload = async () => {
     try {
@@ -74,6 +76,8 @@ const Share = () => {
     const payload = { desc, img: imgUrl };
     const trimmedPlace = (place || "").trim();
     if (trimmedPlace.length > 0) payload.place = trimmedPlace;
+    const trimmedFeeling = (feeling || "").trim();
+    if (trimmedFeeling.length > 0) payload.feeling = trimmedFeeling;
     if (safeTagged.length > 0) payload.taggedUsers = safeTagged;
     console.log("POST /posts payload", payload, "currentUser:", currentUser);
     mutation.mutate(payload);
@@ -82,6 +86,8 @@ const Share = () => {
     setShowTagPicker(false);
     setPlace("");
     setShowPlaceInput(false);
+    setFeeling("");
+    setShowFeelingInput(false);
   };
 
   const toggleTag = (userId) => {
@@ -154,6 +160,21 @@ const Share = () => {
             />
           </div>
         )}
+        {showFeelingInput && (
+          <div className="feeling-input">
+            <label>Add Feeling:</label>
+            <select value={feeling} onChange={(e) => setFeeling(e.target.value)}>
+              <option value="">Select feeling…</option>
+              <option value="Happy">Happy 😊</option>
+              <option value="Sad">Sad 😢</option>
+              <option value="Excited">Excited 🤩</option>
+              <option value="Blessed">Blessed 🙏</option>
+              <option value="Grateful">Grateful 💖</option>
+              <option value="Angry">Angry 😡</option>
+              <option value="Tired">Tired 😴</option>
+            </select>
+          </div>
+        )}
         <hr />
         <div className="bottom">
           <div className="left">
@@ -176,6 +197,10 @@ const Share = () => {
             <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowTagPicker((s) => !s)}>
               <img src={Friend} alt="" />
               <span>Tag Friends</span>
+            </div>
+            <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowFeelingInput((s) => !s)}>
+              <img src={Friend} alt="" />
+              <span>Add Feeling</span>
             </div>
           </div>
           <div className="right">
