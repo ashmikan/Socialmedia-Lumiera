@@ -145,7 +145,7 @@ const Share = () => {
         )}
         {showPlaceInput && (
           <div className="place-input">
-            <label>Add place:</label>
+            <label>Add Location:</label>
             <input
               type="text"
               placeholder="Where are you?"
@@ -171,7 +171,7 @@ const Share = () => {
             </label>
             <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowPlaceInput((s) => !s)}>
               <img src={Map} alt="" />
-              <span>Add Place</span>
+              <span>Add Location</span>
             </div>
             <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowTagPicker((s) => !s)}>
               <img src={Friend} alt="" />
