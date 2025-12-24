@@ -94,9 +94,9 @@ const Post = ({ post }) => {
                         <Link to={`/profile/${post.userId}`} style={{ textDecoration: "none", color: "inherit" }}>
                         <span className="name">{post.name}</span>
                         </Link>
-
+                        
                         {post.place && (
-                          <span className="place" >
+                          <span className="place">
                             <span>{post.place}</span>
                           </span>
                         )}
@@ -113,9 +113,17 @@ const Post = ({ post }) => {
                 <p>{post.desc}</p>
                 <img src={"/upload/" + post.img} alt=""/>
             </div>
+
+            <div className="postInfo" style={{ display: "flex", alignItems: "center", gap: "6px"}}>
+            {post.feeling && (
+                          <span className="feeling" >
+                            feeling {post.feeling}
+                          </span>
+            )}
+
             {post.taggedUsers && post.taggedUsers.length > 0 && (
               <div className="tagged">
-                <span>With </span>
+                <span className="with"> with </span>
                 {post.taggedUsers.map((u, idx) => (
                   <span key={u.id} style={{ marginRight: 6 }}>
                     <Link to={`/profile/${u.id}`} style={{ textDecoration: "none", color: "inherit" }}>{u.name}</Link>
@@ -124,6 +132,7 @@ const Post = ({ post }) => {
                 ))}
               </div>
             )}
+            </div>  
             <div className="info">
                 <div className="item">
                     {isLoading ? (

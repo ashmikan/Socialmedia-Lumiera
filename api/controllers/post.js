@@ -70,14 +70,44 @@ export const addPost = (req, res) => {
     console.log('addPost body (normalized tagged):', tagged);
 
     const trimmedPlace = (req.body.place || "").trim();
+    const trimmedFeeling = (req.body.feeling || "").trim();
     const createdAt = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
-
-    const insertWithPlace = () => {
-      const q = "INSERT INTO posts (`desc`, `img`, `place`, `createdAt`, `userId`) VALUES (?)";
-      const values = [req.body.desc, req.body.img, trimmedPlace, createdAt, userInfo.id];
+    
+    const insertPlaceFeeling = () => {
+      const q = "INSERT INTO posts (`desc`, `img`, `place`, `feeling`, `createdAt`, `userId`) VALUES (?)";
+      const values = [req.body.desc, req.body.img, trimmedPlace || null, trimmedFeeling || null, createdAt, userInfo.id];
       db.query(q, [values], (err, data) => {
         if (err) {
-          // If unknown column 'place' (ER_BAD_FIELD_ERROR), fallback to legacy insert
+          if (err?.code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+            // Fallback to trying with only place
+            return insertWithPlaceOnly();
+          }
+          return res.status(500).json(err);
+        }
+        return handleTagsAndRespond(data.insertId);
+      });
+    };
+
+    const insertWithPlaceOnly = () => {
+      const q = "INSERT INTO posts (`desc`, `img`, `place`, `createdAt`, `userId`) VALUES (?)";
+      const values = [req.body.desc, req.body.img, trimmedPlace || null, createdAt, userInfo.id];
+      db.query(q, [values], (err, data) => {
+        if (err) {
+          if (err?.code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
+            // Fallback to trying with only feeling
+            return insertWithFeelingOnly();
+          }
+          return res.status(500).json(err);
+        }
+        return handleTagsAndRespond(data.insertId);
+      });
+    };
+
+    const insertWithFeelingOnly = () => {
+      const q = "INSERT INTO posts (`desc`, `img`, `feeling`, `createdAt`, `userId`) VALUES (?)";
+      const values = [req.body.desc, req.body.img, trimmedFeeling || null, createdAt, userInfo.id];
+      db.query(q, [values], (err, data) => {
+        if (err) {
           if (err?.code === 'ER_BAD_FIELD_ERROR' || err?.errno === 1054) {
             return insertLegacy();
           }
@@ -109,8 +139,8 @@ export const addPost = (req, res) => {
       }
     };
 
-    if (trimmedPlace) {
-      insertWithPlace();
+    if (trimmedPlace || trimmedFeeling) {
+      insertPlaceFeeling();
     } else {
       insertLegacy();
     }

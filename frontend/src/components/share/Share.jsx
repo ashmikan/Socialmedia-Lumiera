@@ -2,6 +2,7 @@ import "./Share.scss";
 import Image from "../../assets/img.png";
 import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
+import Feeling from "../../assets/emoji.png";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -14,6 +15,8 @@ const Share = () => {
   const [showTagPicker, setShowTagPicker] = useState(false);
   const [place, setPlace] = useState("");
   const [showPlaceInput, setShowPlaceInput] = useState(false);
+  const [feeling, setFeeling] = useState("");
+  const [showFeelingInput, setShowFeelingInput] = useState(false);
 
   const upload = async () => {
     try {
@@ -74,6 +77,8 @@ const Share = () => {
     const payload = { desc, img: imgUrl };
     const trimmedPlace = (place || "").trim();
     if (trimmedPlace.length > 0) payload.place = trimmedPlace;
+    const trimmedFeeling = (feeling || "").trim();
+    if (trimmedFeeling.length > 0) payload.feeling = trimmedFeeling;
     if (safeTagged.length > 0) payload.taggedUsers = safeTagged;
     console.log("POST /posts payload", payload, "currentUser:", currentUser);
     mutation.mutate(payload);
@@ -82,6 +87,8 @@ const Share = () => {
     setShowTagPicker(false);
     setPlace("");
     setShowPlaceInput(false);
+    setFeeling("");
+    setShowFeelingInput(false);
   };
 
   const toggleTag = (userId) => {
@@ -145,13 +152,28 @@ const Share = () => {
         )}
         {showPlaceInput && (
           <div className="place-input">
-            <label>Add place:</label>
+            <label>Add Location:</label>
             <input
               type="text"
               placeholder="Where are you?"
               value={place}
               onChange={(e) => setPlace(e.target.value)}
             />
+          </div>
+        )}
+        {showFeelingInput && (
+          <div className="feeling-input">
+            <label>Add Feeling:</label>
+            <select value={feeling} onChange={(e) => setFeeling(e.target.value)}>
+              <option className="null" value="">Select feeling…</option>
+              <option value="Happy">Happy 😊</option>
+              <option value="Sad">Sad 😢</option>
+              <option value="Excited">Excited 🤩</option>
+              <option value="Blessed">Blessed 🙏</option>
+              <option value="Grateful">Grateful 💖</option>
+              <option value="Angry">Angry 😡</option>
+              <option value="Tired">Tired 😴</option>
+            </select>
           </div>
         )}
         <hr />
@@ -171,11 +193,15 @@ const Share = () => {
             </label>
             <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowPlaceInput((s) => !s)}>
               <img src={Map} alt="" />
-              <span>Add Place</span>
+              <span>Add Location</span>
             </div>
             <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowTagPicker((s) => !s)}>
               <img src={Friend} alt="" />
               <span>Tag Friends</span>
+            </div>
+            <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowFeelingInput((s) => !s)}>
+              <img src={Feeling} alt="" />
+              <span>Add Feeling</span>
             </div>
           </div>
           <div className="right">

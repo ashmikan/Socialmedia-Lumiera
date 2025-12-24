@@ -90,10 +90,23 @@
           max-height: 500px;
           object-fit: cover;
           margin-top: 15px;
+          margin-bottom: -10px;
+        }
+      }
+
+      .feeling {
+              font-size: 16px;
+              color: themed("textColorSoft");
+      }
+
+      .tagged {
+        .with {
+          color: themed("textColorSoft");
         }
       }
 
       .info {
+        margin-top: 20px;
         display: flex;
         align-items: center;
         gap: 25px;

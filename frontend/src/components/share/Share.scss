@@ -158,6 +158,52 @@
         }
       }
 
+      .feeling-input {
+        margin: 12px 0 8px 0;
+        max-width: 300px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 10px;
+        border: 1px solid rgba(0,0,0,0.06);
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.01));
+        transition: all 0.15s ease;
+
+        &:hover {
+          border-color: themed("border");
+          box-shadow: 0 2px 8px rgba(79, 179, 199, 0.08);
+        }
+
+        label {
+          font-size: 13px;
+          color: themed("textColor");
+          font-weight: 600;
+          white-space: nowrap;
+        }
+
+        select {
+          flex: 1;
+          border: 1px solid rgba(0,0,0,0.08);
+          outline: none;
+          padding: 8px 10px;
+          border-radius: 8px;
+          background-color: transparent;
+          color: black;
+          font-size: 13px;
+          transition: all 0.15s ease;
+
+          .null {
+            color: gray;
+          }
+
+          &:focus {
+            background-color: rgba(79, 179, 199, 0.08);
+            border: 1px solid #4fb3c7;
+          }
+        }
+      }
+
       hr {
         margin: 20px 0px;
         border: none;
