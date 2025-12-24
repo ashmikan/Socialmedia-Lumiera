@@ -90,6 +90,7 @@
           max-height: 500px;
           object-fit: cover;
           margin-top: 15px;
+          margin-bottom: -10px;
         }
       }
 
@@ -105,7 +106,7 @@
       }
 
       .info {
-        margin-top: 5px;
+        margin-top: 20px;
         display: flex;
         align-items: center;
         gap: 25px;

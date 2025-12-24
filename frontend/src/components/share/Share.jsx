@@ -164,7 +164,7 @@ const Share = () => {
           <div className="feeling-input">
             <label>Add Feeling:</label>
             <select value={feeling} onChange={(e) => setFeeling(e.target.value)}>
-              <option value="">Select feeling…</option>
+              <option className="null" value="">Select feeling…</option>
               <option value="Happy">Happy 😊</option>
               <option value="Sad">Sad 😢</option>
               <option value="Excited">Excited 🤩</option>
