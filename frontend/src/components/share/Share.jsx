@@ -2,6 +2,7 @@ import "./Share.scss";
 import Image from "../../assets/img.png";
 import Map from "../../assets/map.png";
 import Friend from "../../assets/friend.png";
+import Feeling from "../../assets/emoji.png";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
@@ -199,7 +200,7 @@ const Share = () => {
               <span>Tag Friends</span>
             </div>
             <div className="item" style={{ cursor: "pointer" }} onClick={() => setShowFeelingInput((s) => !s)}>
-              <img src={Friend} alt="" />
+              <img src={Feeling} alt="" />
               <span>Add Feeling</span>
             </div>
           </div>
