@@ -106,25 +106,136 @@
                 display: none;
             }
         
-        .user {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-weight: 500;
+            .notification-container {
+              position: relative;
 
-            @include tablet{
-                display: none;
+              .notification-badge {
+                position: absolute;
+                top: -8px;
+                right: -8px;
+                background-color: #ff6b6b;
+                color: white;
+                border-radius: 50%;
+                width: 20px;
+                height: 20px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: bold;
+              }
+
+              .notification-modal {
+                position: absolute;
+                top: 50px;
+                right: 0;
+                width: 350px;
+                background-color: themed("bg");
+                border: 1px solid themed("border");
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                max-height: 400px;
+                overflow-y: auto;
+                z-index: 1000;
+
+                .notification-header {
+                  display: flex;
+                  justify-content: space-between;
+                  align-items: center;
+                  padding: 12px 16px;
+                  border-bottom: 1px solid themed("border");
+
+                  h3 {
+                    margin: 0;
+                    font-size: 16px;
+                    font-weight: 600;
+                  }
+
+                  button {
+                    background: none;
+                    border: none;
+                    font-size: 24px;
+                    cursor: pointer;
+                    color: themed("textColor");
+                    padding: 0;
+
+                    &:hover {
+                      color: #ff6b6b;
+                    }
+                  }
+                }
+
+                .notification-list {
+                  .notification-item {
+                    display: flex;
+                    gap: 12px;
+                    padding: 12px 16px;
+                    cursor: pointer;
+                    border-bottom: 1px solid themed("border");
+                    transition: background-color 0.2s ease;
+
+                    &:hover {
+                      background-color: themed("bgSoft");
+                    }
+
+                    .notification-avatar {
+                      width: 40px;
+                      height: 40px;
+                      border-radius: 50%;
+                      object-fit: cover;
+                      flex-shrink: 0;
+                    }
+
+                    .notification-content {
+                      flex: 1;
+                      display: flex;
+                      flex-direction: column;
+                      gap: 4px;
+
+                      p {
+                        margin: 0;
+                        font-size: 14px;
+                        color: themed("textColor");
+                      }
+
+                      .notification-time {
+                        font-size: 12px;
+                        color: themed("textColorSoft");
+                      }
+                    }
+                  }
+
+                  .no-notifications {
+                    padding: 20px;
+                    text-align: center;
+                    color: themed("textColorSoft");
+
+                    p {
+                      margin: 0;
+                      font-size: 14px;
+                    }
+                  }
+                }
+              }
             }
+        
+            .user {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              font-weight: 500;
 
-            img {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            object-fit: cover;
+              @include tablet{
+                  display: none;
+              }
+
+              img {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                object-fit: cover;
+              }
             }
-
-            
-        }
         }
 }
 }
