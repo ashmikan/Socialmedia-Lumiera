@@ -1,0 +1,97 @@
+@import "../../style.scss";
+
+.search-page {
+  @include themify($themes) {
+    padding: 20px;
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+
+      h1 {
+        font-size: 28px;
+        margin-bottom: 10px;
+        color: themed("textColor");
+      }
+
+      .search-term {
+        font-size: 14px;
+        color: themed("textColorSoft");
+        margin-bottom: 30px;
+
+        strong {
+          color: themed("textColor");
+        }
+      }
+
+      .loading,
+      .error,
+      .no-results {
+        text-align: center;
+        padding: 40px 20px;
+        color: themed("textColorSoft");
+        font-size: 16px;
+      }
+
+      .error {
+        color: #f04f7a;
+      }
+
+      .results-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+
+        .result-item {
+          transition: all 0.2s ease;
+
+          &:hover {
+            .user-card {
+              transform: translateX(4px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            }
+          }
+
+          .user-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: themed("bg");
+            border: 1px solid themed("border");
+            transition: all 0.2s ease;
+            cursor: pointer;
+
+            .profile-pic {
+              width: 50px;
+              height: 50px;
+              border-radius: 50%;
+              object-fit: cover;
+              flex-shrink: 0;
+            }
+
+            .user-info {
+              flex: 1;
+
+              h3 {
+                margin: 0;
+                font-size: 16px;
+                color: themed("textColor");
+              }
+
+              .user-desc {
+                margin: 4px 0 0 0;
+                font-size: 13px;
+                color: themed("textColorSoft");
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -13,6 +13,22 @@ export const getUser = (req, res) => {
     });
 }
 
+export const searchUsers = (req, res) => {
+    const searchQuery = req.query.q || "";
+    
+    if (!searchQuery.trim()) {
+        return res.status(200).json([]);
+    }
+
+    const q = "SELECT id, name, profilePic, desc FROM users WHERE name LIKE ? OR desc LIKE ? LIMIT 20";
+    const searchTerm = `%${searchQuery}%`;
+
+    db.query(q, [searchTerm, searchTerm], (err, data) => {
+        if (err) return res.status(500).json(err);
+        return res.status(200).json(data || []);
+    });
+}
+
 export const updateUser = (req, res) => {
     const token = req.cookies.access_token; 
     if (!token) return res.status(401).json("Not logged in!");

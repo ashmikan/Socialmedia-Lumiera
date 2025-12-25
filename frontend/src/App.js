@@ -1,6 +1,7 @@
 import './App.css';
 import Login from './pages/login/Login';
 import Register from "./pages/register/Register";
+import Search from "./pages/search/Search";
 import {
   BrowserRouter as Router,
   Routes,
@@ -38,6 +39,7 @@ function App() {
             <div style={{ flex: 6 }}>
               <Routes>
                 <Route path="/" element={<Home />} />
+                <Route path="/search" element={<Search />} />
                 <Route path="/profile/:id" element={<Profile />} />
               </Routes>
             </div>
