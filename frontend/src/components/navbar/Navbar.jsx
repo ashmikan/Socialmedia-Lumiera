@@ -8,7 +8,7 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { DarkModeContext } from "../../context/darkModeContext";
 import { AuthContext } from "../../context/authContext";
 import logo from "../../assets/logo.png";
@@ -17,6 +17,20 @@ const Navbar = () => {
   const { toggle, darkMode } = useContext(DarkModeContext);
   const navigate = useNavigate();
   const { currentUser } = useContext(AuthContext);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      navigate(`/search?q=${encodeURIComponent(searchQuery)}`);
+      setSearchQuery("");
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
 
   return (
     <div className="navbar">
@@ -30,8 +44,14 @@ const Navbar = () => {
         {darkMode ? <WbSunnyOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} /> : <DarkModeOutlinedIcon className="icon" onClick={toggle} style={{ cursor: "pointer" }} />}
         <GridViewOutlinedIcon className="icon" onClick={() => navigate("/explore")} style={{ cursor: "pointer" }} />
         <div className="search">
-          <SearchOutlinedIcon />
-          <input type="text" placeholder="Search..." />
+          <SearchOutlinedIcon onClick={handleSearch} style={{ cursor: "pointer" }} />
+          <input 
+            type="text" 
+            placeholder="Search..." 
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyPress={handleKeyPress}
+          />
         </div>
       </div>
 

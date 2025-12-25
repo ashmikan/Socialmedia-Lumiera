@@ -51,14 +51,40 @@
             align-items: center;
             gap: 10px;
             border: 1px solid themed("border");
-            border-radius: 5px;
-            padding: 5px;
+            border-radius: 20px;
+            padding: 8px 12px;
+            transition: all 0.3s ease;
+            cursor: text;
+
+            &:hover {
+              border-color: #4fb3c7;
+              box-shadow: 0 2px 8px rgba(79, 179, 199, 0.1);
+            }
+
+            &:focus-within {
+              border-color: #4fb3c7;
+              box-shadow: 0 4px 12px rgba(79, 179, 199, 0.2);
+            }
+
+            svg {
+              transition: all 0.2s ease;
+              &:hover {
+                color: #4fb3c7;
+              }
+            }
 
             input {
                 border: none;
                 width: 500px;
                 background-color: transparent;
                 color: themed("textColor");
+                outline: none;
+                font-size: 14px;
+                transition: all 0.2s ease;
+
+                &::placeholder {
+                  color: themed("textColorSoft");
+                }
 
                 @include mobile{
                     display: none;
@@ -67,7 +93,6 @@
                 @include tablet{
                     width: 200px;
                 }
-
             }
         }
         }
