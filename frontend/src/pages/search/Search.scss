@@ -3,11 +3,13 @@
 .search-page {
   @include themify($themes) {
     padding: 20px;
+    background-color: themed("bgSoft");
+    height: 100%;
 
     .container {
       max-width: 600px;
       margin: 0 auto;
-
+      
       h1 {
         font-size: 28px;
         margin-bottom: 10px;
