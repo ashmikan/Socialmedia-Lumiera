@@ -15,16 +15,23 @@ export const getUser = (req, res) => {
 
 export const searchUsers = (req, res) => {
     const searchQuery = req.query.q || "";
+    console.log("Search endpoint hit with query:", searchQuery);
     
     if (!searchQuery.trim()) {
         return res.status(200).json([]);
     }
 
-    const q = "SELECT id, name, profilePic, desc FROM users WHERE name LIKE ? OR desc LIKE ? LIMIT 20";
     const searchTerm = `%${searchQuery}%`;
 
-    db.query(q, [searchTerm, searchTerm], (err, data) => {
-        if (err) return res.status(500).json(err);
+    // Search by name only to avoid reserved word issues with `desc`
+    const q = "SELECT id, name, profilePic FROM users WHERE name LIKE ? LIMIT 20";
+
+    db.query(q, [searchTerm], (err, data) => {
+        if (err) {
+            console.log("Search query error:", err.code, err.errno, err.sqlMessage);
+            return res.status(500).json(err);
+        }
+        console.log("Search results found:", data?.length || 0);
         return res.status(200).json(data || []);
     });
 }
