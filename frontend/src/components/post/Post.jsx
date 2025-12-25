@@ -29,6 +29,14 @@ const Post = ({ post }) => {
       })
   });
 
+  const { data: commentsData } = useQuery({
+    queryKey: ["comments", post.id],
+    queryFn: () =>
+      makeRequest.get("/comments?postId="+post.id).then((res) => {
+        return res.data;
+      })
+  });
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
@@ -146,7 +154,7 @@ const Post = ({ post }) => {
                 </div>
                 <div className="item" onClick={() => setCommentOpen(!commentOpen)}>
                     <TextsmsOutlinedIcon />
-                    {data?.length ?? 0} Comments
+                    {commentsData?.length ?? 0} Comments
                 </div>
                 <div className="item" onClick={handleShare} style={{ cursor: "pointer" }}>
                   <ShareOutlinedIcon />
