@@ -8,7 +8,7 @@ import EmailOutlinedIcon from "@mui/icons-material/EmailOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchOutlinedIcon from "@mui/icons-material/SearchOutlined";
 import { Link, useNavigate } from "react-router-dom";
-import { useContext, useState, useEffect } from 'react';
+import { useContext, useState, useEffect, useRef } from 'react';
 import { DarkModeContext } from "../../context/darkModeContext";
 import { AuthContext } from "../../context/authContext";
 import { useQuery } from '@tanstack/react-query';
@@ -22,20 +22,42 @@ const Navbar = () => {
   const { currentUser } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const notificationRef = useRef(null);
 
-  const { data: notifications } = useQuery({
+  const { data: notifications, isLoading: notificationsLoading, isError: notificationsError } = useQuery({
     queryKey: ["notifications"],
     queryFn: () =>
       makeRequest.get("/notifications").then((res) => res.data),
     refetchInterval: 30000, // Refetch every 30 seconds
+    retry: 1,
+    staleTime: 20000,
   });
 
   const { data: unreadCount } = useQuery({
     queryKey: ["notificationsCount"],
     queryFn: () =>
-      makeRequest.get("/notifications/unread-count").then((res) => res.data.count),
+      makeRequest.get("/notifications/unread-count").then((res) => res.data?.count || 0),
     refetchInterval: 30000, // Refetch every 30 seconds
+    retry: 1,
+    staleTime: 20000,
   });
+
+  // Close notification modal when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (notificationRef.current && !notificationRef.current.contains(event.target)) {
+        setNotificationOpen(false);
+      }
+    };
+
+    if (notificationOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [notificationOpen]);
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
@@ -87,14 +109,14 @@ const Navbar = () => {
       <div className="right">
         <PersonOutlinedIcon className="icon" onClick={() => navigate("/profile/me")} style={{ cursor: "pointer" }} />
         <EmailOutlinedIcon className="icon" onClick={() => navigate("/messages")} style={{ cursor: "pointer" }} />
-        <div className="notification-container" style={{ position: "relative" }}>
+        <div className="notification-container" style={{ position: "relative" }} ref={notificationRef}>
           <NotificationsOutlinedIcon 
             className="icon" 
             onClick={() => setNotificationOpen(!notificationOpen)} 
             style={{ cursor: "pointer" }} 
           />
-          {unreadCount > 0 && (
-            <span className="notification-badge">{unreadCount}</span>
+          {(unreadCount && unreadCount > 0) && (
+            <span className="notification-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
           )}
           
           {notificationOpen && (
@@ -104,7 +126,15 @@ const Navbar = () => {
                 <button onClick={() => setNotificationOpen(false)}>×</button>
               </div>
               <div className="notification-list">
-                {notifications && notifications.length > 0 ? (
+                {notificationsLoading ? (
+                  <div className="no-notifications">
+                    <p>Loading notifications...</p>
+                  </div>
+                ) : notificationsError ? (
+                  <div className="no-notifications">
+                    <p>Failed to load notifications</p>
+                  </div>
+                ) : notifications && notifications.length > 0 ? (
                   notifications.map((notification, idx) => (
                     <div 
                       key={idx} 
@@ -119,7 +149,7 @@ const Navbar = () => {
                       }}
                     >
                       <img 
-                        src={notification.fromUserProfilePic} 
+                        src={notification.fromUserProfilePic || currentUser.profilePic} 
                         alt={notification.fromUserName}
                         className="notification-avatar"
                       />

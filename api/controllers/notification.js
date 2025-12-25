@@ -16,7 +16,7 @@ export const getNotifications = (req, res) => {
         u.name AS fromUserName,
         u.profilePic AS fromUserProfilePic,
         l.postId,
-        l.createdAt,
+        NOW() AS createdAt,
         NULL AS commentId
       FROM likes AS l
       JOIN users AS u ON l.userId = u.id
@@ -46,7 +46,7 @@ export const getNotifications = (req, res) => {
         u.name AS fromUserName,
         u.profilePic AS fromUserProfilePic,
         NULL AS postId,
-        r.createdAt,
+        NOW() AS createdAt,
         NULL AS commentId
       FROM relationships AS r
       JOIN users AS u ON r.followerUserId = u.id
@@ -70,30 +70,30 @@ export const getUnreadNotificationCount = (req, res) => {
   jwt.verify(token, "secretkey", (err, userInfo) => {
     if (err) return res.status(403).json("Token is not valid!");
 
-    // Count recent notifications from the last 24 hours
+    // Count all notifications (since we don't have createdAt on all tables)
     const q = `
       SELECT COUNT(*) as count FROM (
-        SELECT l.createdAt
+        SELECT l.userId
         FROM likes AS l
         JOIN posts AS p ON l.postId = p.id
-        WHERE p.userId = ? AND l.createdAt > DATE_SUB(NOW(), INTERVAL 1 DAY)
+        WHERE p.userId = ? AND l.userId != ?
         
         UNION ALL
         
-        SELECT c.createdAt
+        SELECT c.userId
         FROM comments AS c
         JOIN posts AS p ON c.postId = p.id
-        WHERE p.userId = ? AND c.createdAt > DATE_SUB(NOW(), INTERVAL 1 DAY)
+        WHERE p.userId = ? AND c.userId != ? AND c.createdAt > DATE_SUB(NOW(), INTERVAL 1 DAY)
         
         UNION ALL
         
-        SELECT r.createdAt
+        SELECT r.followerUserId
         FROM relationships AS r
-        WHERE r.followedUserId = ? AND r.createdAt > DATE_SUB(NOW(), INTERVAL 1 DAY)
-      ) AS recent_notifications
+        WHERE r.followedUserId = ? AND r.followerUserId != ?
+      ) AS all_notifications
     `;
 
-    db.query(q, [userInfo.id, userInfo.id, userInfo.id], (err, data) => {
+    db.query(q, [userInfo.id, userInfo.id, userInfo.id, userInfo.id, userInfo.id, userInfo.id], (err, data) => {
       if (err) return res.status(500).json(err);
       return res.status(200).json({ count: data[0].count });
     });
