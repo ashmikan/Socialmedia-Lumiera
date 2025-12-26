@@ -163,3 +163,30 @@ export const deletePost = (req, res) => {
     })
   })    
 };
+
+export const getPost = (req, res) => {
+  const postId = req.params.id;
+  const token = req.cookies.access_token; 
+  if (!token) return res.status(401).json("Not logged in!");
+
+  jwt.verify(token, "secretkey", (err, userInfo) => {
+    if (err) return res.status(403).json("Token is not valid!");
+
+    const q = `SELECT p.*, u.id AS userId, u.name, u.profilePic FROM posts AS p JOIN users AS u ON (u.id = p.userId) WHERE p.id = ?`;
+
+    db.query(q, [postId], (err, data) => {
+      if (err) return res.status(500).json(err);
+      if (!data || data.length === 0) return res.status(404).json("Post not found");
+      
+      const post = data[0];
+      
+      // Get tagged users for this post
+      const tagsQ = `SELECT pt.postId, u.id, u.name, u.profilePic FROM posttags pt JOIN users u ON u.id = pt.userId WHERE pt.postId = ?`;
+      db.query(tagsQ, [postId], (err2, tagsData) => {
+        if (err2) return res.status(500).json(err2);
+        const taggedUsers = tagsData || [];
+        return res.status(200).json({ ...post, taggedUsers });
+      });
+    })
+  })    
+};

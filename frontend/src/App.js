@@ -2,6 +2,7 @@ import './App.css';
 import Login from './pages/login/Login';
 import Register from "./pages/register/Register";
 import Search from "./pages/search/Search";
+import PostPage from "./pages/post/Post";
 import {
   BrowserRouter as Router,
   Routes,
@@ -40,6 +41,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/search" element={<Search />} />
+                <Route path="/post/:id" element={<PostPage />} />
                 <Route path="/profile/:id" element={<Profile />} />
               </Routes>
             </div>
