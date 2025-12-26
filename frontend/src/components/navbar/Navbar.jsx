@@ -22,7 +22,16 @@ const Navbar = () => {
   const { currentUser } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationOpen, setNotificationOpen] = useState(false);
+  const [readNotifications, setReadNotifications] = useState([]);
   const notificationRef = useRef(null);
+
+  // Load read notifications from localStorage
+  useEffect(() => {
+    const stored = localStorage.getItem(`readNotifications_${currentUser.id}`);
+    if (stored) {
+      setReadNotifications(JSON.parse(stored));
+    }
+  }, [currentUser.id]);
 
   const { data: notifications, isLoading: notificationsLoading, isError: notificationsError } = useQuery({
     queryKey: ["notifications"],
@@ -33,14 +42,13 @@ const Navbar = () => {
     staleTime: 20000,
   });
 
-  const { data: unreadCount } = useQuery({
-    queryKey: ["notificationsCount"],
-    queryFn: () =>
-      makeRequest.get("/notifications/unread-count").then((res) => res.data?.count || 0),
-    refetchInterval: 30000, // Refetch every 30 seconds
-    retry: 1,
-    staleTime: 20000,
-  });
+  // Calculate unread count from notifications minus read ones
+  const unreadCount = notifications
+    ? notifications.filter(n => {
+        const notifId = `${n.type}_${n.fromUserId}_${n.postId || n.fromUserId}`;
+        return !readNotifications.includes(notifId);
+      }).length
+    : 0;
 
   // Close notification modal when clicking outside
   useEffect(() => {
@@ -83,6 +91,28 @@ const Navbar = () => {
     return "New notification";
   };
 
+  const markAsRead = (notification) => {
+    const notifId = `${notification.type}_${notification.fromUserId}_${notification.postId || notification.fromUserId}`;
+    if (!readNotifications.includes(notifId)) {
+      const updated = [...readNotifications, notifId];
+      setReadNotifications(updated);
+      localStorage.setItem(`readNotifications_${currentUser.id}`, JSON.stringify(updated));
+    }
+  };
+
+  const isRead = (notification) => {
+    const notifId = `${notification.type}_${notification.fromUserId}_${notification.postId || notification.fromUserId}`;
+    return readNotifications.includes(notifId);
+  };
+
+  const markAllAsRead = () => {
+    if (notifications && notifications.length > 0) {
+      const allIds = notifications.map(n => `${n.type}_${n.fromUserId}_${n.postId || n.fromUserId}`);
+      setReadNotifications(allIds);
+      localStorage.setItem(`readNotifications_${currentUser.id}`, JSON.stringify(allIds));
+    }
+  };
+
   return (
     <div className="navbar">
       <div className="left">
@@ -123,7 +153,20 @@ const Navbar = () => {
             <div className="notification-modal">
               <div className="notification-header">
                 <h3>Notifications</h3>
-                <button onClick={() => setNotificationOpen(false)}>×</button>
+                <div className="header-actions">
+                  {unreadCount > 0 && (
+                    <button 
+                      className="mark-all-read" 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        markAllAsRead();
+                      }}
+                    >
+                      Mark all read
+                    </button>
+                  )}
+                  <button onClick={() => setNotificationOpen(false)}>×</button>
+                </div>
               </div>
               <div className="notification-list">
                 {notificationsLoading ? (
@@ -138,8 +181,9 @@ const Navbar = () => {
                   notifications.map((notification, idx) => (
                     <div 
                       key={idx} 
-                      className="notification-item"
+                      className={`notification-item ${isRead(notification) ? 'read' : 'unread'}`}
                       onClick={() => {
+                        markAsRead(notification);
                         if (notification.postId) {
                           navigate(`/post/${notification.postId}`);
                         } else if (notification.fromUserId) {
