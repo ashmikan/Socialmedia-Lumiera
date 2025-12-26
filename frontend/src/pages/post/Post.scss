@@ -1,0 +1,47 @@
+@import "../../style.scss";
+
+.post-page {
+  @include themify($themes) {
+    display: flex;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100vh;
+    background-color: themed("bgSoft");
+
+    .post-detail {
+      width: 100%;
+      max-width: 600px;
+      background-color: themed("bg");
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+      .back-btn {
+        display: inline-block;
+        margin-bottom: 20px;
+        padding: 8px 16px;
+        background-color: themed("bgSoft");
+        border: 1px solid themed("border");
+        color: themed("textColor");
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background-color: themed("border");
+          color: themed("logo");
+        }
+      }
+    }
+
+    @include mobile {
+      padding: 10px;
+
+      .post-detail {
+        padding: 15px;
+        max-width: 100%;
+      }
+    }
+  }
+}
