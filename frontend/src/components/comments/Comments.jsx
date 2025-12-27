@@ -78,12 +78,6 @@ const Comments = ({postId}) => {
                     className="delete-btn"
                     onClick={() => deleteMutation.mutate(comment.id)}
                     title="Delete comment"
-                    style={{
-                      marginLeft: 10,
-                      background: "none",
-                      border: "none",
-                      cursor: "pointer",
-                    }}
                   >
                     <DeleteOutlineOutlinedIcon fontSize="small" />
                   </button>

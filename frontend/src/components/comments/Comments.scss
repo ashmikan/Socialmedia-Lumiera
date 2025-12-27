@@ -73,6 +73,21 @@
         align-self: center;
         color: gray;
         font-size: 12px;
+        margin-top: 8px;
+
+        .delete-btn{
+          margin-left: 10px;
+          margin-top: 5px;
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: gray;
+          transition: color 0.2s ease;
+
+          &:hover {
+            color: #ff6b6b;
+          }
+        }
       }
     }
   }
