@@ -51,7 +51,16 @@ const Comments = ({postId}) => {
   return (
     <div className="comments">
         <div className="write">
-            <img src={currentUser.profilePic} alt=""/>
+            <img
+              src={
+                currentUser.profilePic
+                  ? (currentUser.profilePic.startsWith('/upload/') || currentUser.profilePic.startsWith('http')
+                      ? currentUser.profilePic
+                      : `/upload/${currentUser.profilePic}`)
+                  : ""
+              }
+              alt=""
+            />
             <input 
               type="text" 
               placeholder="Write a comment..." 
@@ -66,7 +75,16 @@ const Comments = ({postId}) => {
           ? "Loading..."
           : (data ?? []).map((comment) => (
             <div className="comment" key={comment.id}>
-              <img src={comment.profilePic} alt=""/>
+              <img
+                src={
+                  comment.profilePic
+                    ? (comment.profilePic.startsWith('/upload/') || comment.profilePic.startsWith('http')
+                        ? comment.profilePic
+                        : `/upload/${comment.profilePic}`)
+                    : ""
+                }
+                alt=""
+              />
               <div className="info">
                 <span>{comment.name}</span>
                 <p>{comment.desc}</p>
