@@ -71,6 +71,24 @@
         p{
           color:themed("textColorSoft")
         }
+
+        .comment-like {
+          display: inline-flex;
+          align-items: center;
+          gap: 5px;
+          margin-top: -10px;
+          font-size: 12px;
+          color: themed("textColorSoft");
+
+          .like-count {
+            min-width: 10px;
+          }
+
+          svg {
+            width: 16px;
+            height: 16px;
+          }
+        }
       }
 
       .date{

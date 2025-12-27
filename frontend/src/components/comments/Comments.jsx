@@ -3,6 +3,8 @@ import { useContext } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlined";
+import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import { makeRequest } from "../../axios";
 import moment from "moment";
 import { useState } from "react";
@@ -39,6 +41,46 @@ const Comments = ({postId}) => {
       queryClient.invalidateQueries({ queryKey: ["comments"] });
     },
   });
+
+  // Fetch likes for all comments in this post (map: commentId -> [userIds])
+  const { data: commentLikes } = useQuery({
+    queryKey: ["commentLikes", postId],
+    queryFn: () =>
+      makeRequest.get(`/comment-likes?postId=${postId}`).then((res) => res.data),
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: (commentId) => {
+      return makeRequest.post("/comment-likes", { commentId });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["commentLikes"] });
+    },
+  });
+
+  const unlikeMutation = useMutation({
+    mutationFn: (commentId) => {
+      return makeRequest.delete(`/comment-likes?commentId=${commentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["commentLikes"] });
+    },
+  });
+
+  const isLikedByMe = (commentId) => {
+    const users = commentLikes?.[commentId] || [];
+    return users.includes?.(currentUser.id);
+  };
+
+  const likeCount = (commentId) => (commentLikes?.[commentId]?.length ?? 0);
+
+  const handleToggleLike = (commentId) => {
+    if (isLikedByMe(commentId)) {
+      unlikeMutation.mutate(commentId);
+    } else {
+      likeMutation.mutate(commentId);
+    }
+  };
 
   
   const handleClick = async (e) => {
@@ -88,6 +130,22 @@ const Comments = ({postId}) => {
               <div className="info">
                 <span>{comment.name}</span>
                 <p>{comment.desc}</p>
+                <div className="comment-like">
+                  {isLikedByMe(comment.id) ? (
+                    <FavoriteOutlinedIcon 
+                      fontSize="small"
+                      style={{ color: 'lightcoral', cursor: 'pointer' }} 
+                      onClick={() => handleToggleLike(comment.id)}
+                    />
+                  ) : (
+                    <FavoriteBorderOutlinedIcon 
+                      fontSize="small"
+                      style={{ cursor: 'pointer' }} 
+                      onClick={() => handleToggleLike(comment.id)}
+                    />
+                  )}
+                  <span className="like-count">{likeCount(comment.id)}</span>
+                </div>
               </div>
               <div className="date">
                 {moment(comment.createdAt).fromNow()}
