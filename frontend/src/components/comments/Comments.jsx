@@ -2,6 +2,7 @@ import "./Comments.scss"
 import { useContext } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import { makeRequest } from "../../axios";
 import moment from "moment";
 import { useState } from "react";
@@ -26,6 +27,15 @@ const Comments = ({postId}) => {
     },
     onSuccess: () => {
       // Invalidate and refetch
+      queryClient.invalidateQueries({ queryKey: ["comments"] });
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (commentId) => {
+      return makeRequest.delete(`/comments/${commentId}`);
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["comments"] });
     },
   });
@@ -61,7 +71,24 @@ const Comments = ({postId}) => {
                 <span>{comment.name}</span>
                 <p>{comment.desc}</p>
               </div>
-              <div className="date"> {moment(comment.createdAt).fromNow()} </div>
+              <div className="date">
+                {moment(comment.createdAt).fromNow()}
+                {comment.userId === currentUser.id && (
+                  <button
+                    className="delete-btn"
+                    onClick={() => deleteMutation.mutate(comment.id)}
+                    title="Delete comment"
+                    style={{
+                      marginLeft: 10,
+                      background: "none",
+                      border: "none",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <DeleteOutlineOutlinedIcon fontSize="small" />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
     </div>
