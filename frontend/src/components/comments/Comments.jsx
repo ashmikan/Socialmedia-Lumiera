@@ -130,23 +130,25 @@ const Comments = ({postId}) => {
               <div className="info">
                 <span>{comment.name}</span>
                 <p>{comment.desc}</p>
-              </div>
-              <div className="date">
-                {moment(comment.createdAt).fromNow()}
-                <span style={{ marginLeft: 10, display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <div className="comment-like">
                   {isLikedByMe(comment.id) ? (
                     <FavoriteOutlinedIcon 
+                      fontSize="small"
                       style={{ color: 'lightcoral', cursor: 'pointer' }} 
                       onClick={() => handleToggleLike(comment.id)}
                     />
                   ) : (
                     <FavoriteBorderOutlinedIcon 
+                      fontSize="small"
                       style={{ cursor: 'pointer' }} 
                       onClick={() => handleToggleLike(comment.id)}
                     />
                   )}
-                  {likeCount(comment.id)}
-                </span>
+                  <span className="like-count">{likeCount(comment.id)}</span>
+                </div>
+              </div>
+              <div className="date">
+                {moment(comment.createdAt).fromNow()}
                 {comment.userId === currentUser.id && (
                   <button
                     className="delete-btn"
