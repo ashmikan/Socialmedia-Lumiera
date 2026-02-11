@@ -283,6 +283,35 @@
                 object-fit: cover;
               }
             }
+            .logout-button {
+              background: transparent;
+              border: 1px solid themed("border");
+              color: themed("textColor");
+              padding: 6px 10px;
+              border-radius: 8px;
+              font-size: 14px;
+              font-weight: 520;
+              cursor: pointer;
+              transition: all 0.18s ease;
+              display: inline-flex;
+              align-items: center;
+              gap: 6px;
+
+              &:hover {
+                background-color: rgba(79, 179, 199, 0.08);
+                border-color: #4fb3c7;
+                color: #4fb3c7;
+              }
+
+              &:focus {
+                outline: 2px solid rgba(79, 179, 199, 0.14);
+                outline-offset: 2px;
+              }
+
+              @include mobile{
+                display: none;
+              }
+            }
         }
 }
 }
