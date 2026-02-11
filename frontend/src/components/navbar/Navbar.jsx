@@ -19,7 +19,7 @@ import moment from "moment";
 const Navbar = () => {
   const { toggle, darkMode } = useContext(DarkModeContext);
   const navigate = useNavigate();
-  const { currentUser } = useContext(AuthContext);
+  const { currentUser, logout } = useContext(AuthContext);
   const [searchQuery, setSearchQuery] = useState("");
   const [notificationOpen, setNotificationOpen] = useState(false);
   const [readNotifications, setReadNotifications] = useState([]);
@@ -77,6 +77,15 @@ const Navbar = () => {
   const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       handleSearch();
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (err) {
+      console.error("Logout failed", err);
     }
   };
 
@@ -221,6 +230,7 @@ const Navbar = () => {
           />
           <span>{currentUser.name}</span>
         </div>
+        <button className="logout-button" onClick={handleLogout} style={{ marginLeft: "10px" }}>Logout</button>
       </div>
     </div>
   );
