@@ -6,6 +6,7 @@ import TextsmsOutlinedIcon from "@mui/icons-material/TextsmsOutlined";
 import ShareOutlinedIcon from "@mui/icons-material/ShareOutlined";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Comments from "../comments/Comments";
+import EditPost from "./EditPost";
 import MapIcon from "../../assets/map.png";
 import { useState } from "react";
 import moment from "moment";
@@ -18,6 +19,7 @@ const Post = ({ post }) => {
   
   const [commentOpen, setCommentOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
 
   const {currentUser} = useContext(AuthContext);
 
@@ -114,7 +116,10 @@ const Post = ({ post }) => {
                 </div>
                 <MoreHorizIcon onClick={() => setMenuOpen(!menuOpen)} />
                 {menuOpen && post.userId === currentUser.id && (
-                    <button onClick={handleDelete}>Delete</button>
+                    <div className="menu">
+                      <button onClick={() => setOpenEdit(true)}>Edit</button>
+                      <button onClick={handleDelete}>Delete</button>
+                    </div>
                 )}
             </div>
             <div className="content">
@@ -162,6 +167,7 @@ const Post = ({ post }) => {
                 </div>
             </div>
             {commentOpen && <Comments postId={post.id}/>}
+            {openEdit && <EditPost setOpenEdit={setOpenEdit} post={post} />}
         </div>
     </div>
   )
