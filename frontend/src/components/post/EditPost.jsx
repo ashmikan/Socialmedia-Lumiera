@@ -25,9 +25,19 @@ const EditPost = ({ setOpenEdit, post }) => {
     mutationFn: async (updated) => {
       return makeRequest.put("/posts/" + post.id, updated);
     },
-    onSuccess: () => {
+    onSuccess: (res) => {
+      const updatedPost = res?.data ?? null;
       queryClient.invalidateQueries({ queryKey: ["posts"] });
       queryClient.invalidateQueries({ queryKey: ["post", post.id] });
+      // Optimistically update the cached posts array so UI reflects edit immediately
+      try {
+        queryClient.setQueryData(["posts"], (old) => {
+          if (!old) return old;
+          return old.map((p) => (p.id === post.id ? ({ ...p, ...updatedPost }) : p));
+        });
+      } catch (e) {
+        // ignore cache update errors
+      }
     },
   });
 
@@ -39,8 +49,12 @@ const EditPost = ({ setOpenEdit, post }) => {
       imgUrl = uploaded;
     }
 
-    mutation.mutate({ desc, img: imgUrl });
-    setOpenEdit(false);
+    try {
+      await mutation.mutateAsync({ desc, img: imgUrl });
+      setOpenEdit(false);
+    } catch (err) {
+      console.log("Edit post failed", err);
+    }
   };
 
   return (
