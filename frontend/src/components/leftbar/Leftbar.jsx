@@ -12,12 +12,29 @@ import Messages from "../../assets/10.png";
 import Tutorials from "../../assets/11.png";
 import Courses from "../../assets/12.png";
 import Fund from "../../assets/13.png";
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { AuthContext } from "../../context/authContext";
+import { useQuery } from '@tanstack/react-query';
+import { makeRequest } from "../../axios";
+import { Link } from "react-router-dom";
 
 const Leftbar = () => {
     
   const { currentUser } = useContext(AuthContext);
+    const [showGallery, setShowGallery] = useState(false);
+
+    const { isLoading: isGalleryLoading, data: myPosts = [] } = useQuery({
+        queryKey: ["shortcuts-gallery", currentUser?.id],
+        queryFn: () =>
+            makeRequest.get("/posts?userId=" + currentUser.id).then((res) => {
+                return res.data;
+            }),
+        enabled: !!currentUser?.id && showGallery,
+    });
+
+    const galleryPosts = (myPosts || [])
+        .filter((post) => !!post?.img)
+        .slice(0, 12);
 
   return (
     <div className="leftbar">
@@ -60,10 +77,35 @@ const Leftbar = () => {
                     <img src={Gaming} alt="" />
                     <span>Gaming</span>
                 </div>
-                <div className="item">
+                                <div className="item clickable" onClick={() => setShowGallery((prev) => !prev)}>
                     <img src={Gallery} alt="" />
-                    <span>Gallery</span>
+                                        <span>{showGallery ? "Hide Gallery" : "Gallery"}</span>
                 </div>
+                                {showGallery && (
+                                    <div className="shortcutsGalleryWrap">
+                                        {isGalleryLoading ? (
+                                            <span className="galleryStatus">Loading images...</span>
+                                        ) : galleryPosts.length > 0 ? (
+                                            <div className="shortcutsGallery">
+                                                {galleryPosts.map((post) => (
+                                                    <Link
+                                                        key={post.id}
+                                                        to={`/post/${post.id}`}
+                                                        className="thumb"
+                                                        title={post.desc || "View post"}
+                                                    >
+                                                        <img
+                                                            src={post.img.startsWith("http") || post.img.startsWith("/upload/") ? post.img : "/upload/" + post.img}
+                                                            alt="uploaded"
+                                                        />
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <span className="galleryStatus">No uploaded images yet.</span>
+                                        )}
+                                    </div>
+                                )}
                 <div className="item">
                     <img src={Videos} alt="" />
                     <span>Videos</span>
