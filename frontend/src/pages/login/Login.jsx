@@ -29,7 +29,7 @@ const Login = () => {
         await login(inputs);
         navigate("/");
     }catch(err){
-        setErr(err.response.data);
+                setErr(err?.response?.data?.message || err?.response?.data || "Login failed. Please try again.");
     }
   }
 
@@ -49,11 +49,11 @@ const Login = () => {
                     <img src={logo} alt="Lumiera Logo" className="logo" />
                 </div>
                 <h1>Login</h1>
-                <form>
+                <form onSubmit={handleLogin}>
                     <input type="text" placeholder="Username" name="username" onChange={handleChange} required/>
                     <input type="password" placeholder="Password" name="password" onChange={handleChange} required/>
-                    {err && <span className="error">{err.message}</span>}
-                    <button onClick={handleLogin}>Login</button>
+                    {err && <span className="error">{err}</span>}
+                    <button type="submit">Login</button>
                 </form> 
             </div>
         </div>

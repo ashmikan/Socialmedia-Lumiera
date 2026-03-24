@@ -26,7 +26,7 @@ const Register = () => {
     try{
       await axios.post("http://localhost:8800/api/auth/register", inputs);
     }catch(err){
-      setErr(err.response.data);
+      setErr(err?.response?.data?.message || err?.response?.data || "Registration failed. Please try again.");
     }
   }
 
@@ -46,7 +46,7 @@ const Register = () => {
             <input type="email" placeholder="Email" name="email" onChange={handleChange} required/>
             <input type="password" placeholder="Password" name="password" onChange={handleChange} required/>
             <input type="password" placeholder="Confirm Password" name="confirmPassword" onChange={handleChange} required/>
-            {err && <span className="error">{err.message}</span>}
+            {err && <span className="error">{err}</span>}
             <button onClick={handleClick}>Register</button>
           </form>
           
