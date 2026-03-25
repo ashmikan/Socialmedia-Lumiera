@@ -1,4 +1,4 @@
-<div align="center"><h1>Lumiera - Social Media App</h1>
+<div align="center"><img src="frontend/public/favicon.ico" alt="Favicon" width="32" height="32" /><h1>Lumiera - Social Media App</h1>
 
 <i>An interactive full-stack social media app with authentication, posts, likes, comments, follows, notifications, media upload, and profile customization.</i>
 </div>
