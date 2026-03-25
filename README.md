@@ -1,8 +1,9 @@
-# Lumiera - Social Media App
+<div align="center"><h1>Lumiera - Social Media App</h1>
 
-An interactive full-stack social media app with authentication, posts, likes, comments, follows, notifications, media upload, and profile customization.
+<i>An interactive full-stack social media app with authentication, posts, likes, comments, follows, notifications, media upload, and profile customization.</i>
+</div>
 
-## Jump To
+## 🎯Jump To
 
 - [Quick Start](#quick-start)
 - [Feature Tour](#feature-tour)
@@ -14,7 +15,7 @@ An interactive full-stack social media app with authentication, posts, likes, co
 
 ---
 
-## Quick Start
+## 📍Quick Start
 
 ### 1) Clone and install
 
@@ -63,7 +64,7 @@ App URLs:
 
 ---
 
-## Feature Tour
+## 📍Feature Tour
 
 ### Account and auth
 
@@ -100,7 +101,7 @@ App URLs:
 
 ---
 
-## Tech Stack
+## 📍Tech Stack
 
 ### Frontend
 
@@ -121,7 +122,7 @@ App URLs:
 
 ---
 
-## Project Structure
+## 📍Project Structure
 
 ```text
 Socialmedia-Lumiera/
@@ -149,7 +150,7 @@ Useful entry files:
 
 ---
 
-## API Overview
+## 📍API Overview
 
 Base URL: `http://localhost:8800/api`
 
@@ -218,7 +219,7 @@ Base URL: `http://localhost:8800/api`
 
 ---
 
-## Database Setup
+## 📍Database Setup
 
 Create a MySQL database named `social` and required tables for:
 
@@ -238,7 +239,7 @@ Important columns used by current code:
 
 ---
 
-## Development Scripts
+## 📍Development Scripts
 
 ### Backend ([api/package.json](api/package.json))
 
@@ -252,7 +253,7 @@ Important columns used by current code:
 
 ---
 
-## Troubleshooting
+## 📍Troubleshooting
 
 <details>
 	<summary><strong>Login not working</strong></summary>
@@ -282,7 +283,11 @@ Important columns used by current code:
 
 ---
 
+<h3 align="center">Thank you for exploring the app - I hope it brings your social connections to life! 🌟</h3>	
+
+---
+
 <div align="center">
 👩🏼‍💻 Credit: <a href="https://github.com/ashmikan">Ashmika Nathali </a>
-Last Edited on: 24/03/2026
+Last Edited on: 25/03/2026
 </div>
