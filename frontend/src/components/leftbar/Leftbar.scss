@@ -81,6 +81,47 @@
           }
         }
 
+        .friendsListWrap {
+          margin-top: -8px;
+
+          .friendsStatus {
+            font-size: 12px;
+            color: gray;
+          }
+
+          .friendsList {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+
+            .friendLink {
+              display: flex;
+              align-items: center;
+              gap: 10px;
+              text-decoration: none;
+              color: themed("textColor");
+              padding: 6px 8px;
+              border-radius: 8px;
+              transition: background-color 0.15s ease;
+
+              &:hover {
+                background-color: themed("bgSoft");
+              }
+
+              img {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
+                object-fit: cover;
+              }
+
+              span {
+                font-size: 14px;
+              }
+            }
+          }
+        }
+
         .shortcutsGallery {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
