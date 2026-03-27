@@ -21,7 +21,29 @@ import { Link } from "react-router-dom";
 const Leftbar = () => {
     
   const { currentUser } = useContext(AuthContext);
+    const [showFriends, setShowFriends] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
+
+    const { data: followerIds = [] } = useQuery({
+        queryKey: ["leftbar-follower-ids", currentUser?.id],
+        queryFn: () =>
+            makeRequest.get("/relationships?followedUserId=" + currentUser.id).then((res) => {
+                return res.data;
+            }),
+        enabled: !!currentUser?.id && showFriends,
+    });
+
+    const { isLoading: isFriendsLoading, data: friendUsers = [] } = useQuery({
+        queryKey: ["leftbar-friends", followerIds],
+        queryFn: async () => {
+            if (!followerIds || followerIds.length === 0) return [];
+            const users = await Promise.all(
+                followerIds.map((id) => makeRequest.get("/users/find/" + id).then((res) => res.data))
+            );
+            return users;
+        },
+        enabled: showFriends && followerIds.length > 0,
+    });
 
     const { isLoading: isGalleryLoading, data: myPosts = [] } = useQuery({
         queryKey: ["shortcuts-gallery", currentUser?.id],
@@ -45,10 +67,35 @@ const Leftbar = () => {
                     <span>{currentUser.name}</span>
                 </div>
 
-                <div className="item">
+                <div className="item clickable" onClick={() => setShowFriends((prev) => !prev)}>
                     <img src={Friends} alt="" />
-                    <span>Friends</span>
+                    <span>{showFriends ? "Hide Friends" : "Friends"}</span>
                 </div>
+                {showFriends && (
+                    <div className="friendsListWrap">
+                        {isFriendsLoading ? (
+                            <span className="friendsStatus">Loading friends...</span>
+                        ) : friendUsers.length > 0 ? (
+                            <div className="friendsList">
+                                {friendUsers.map((friend) => (
+                                    <Link key={friend.id} to={`/profile/${friend.id}`} className="friendLink">
+                                        <img
+                                            src={
+                                                friend.profilePic?.startsWith("http") || friend.profilePic?.startsWith("/upload/")
+                                                    ? friend.profilePic
+                                                    : "/upload/" + friend.profilePic
+                                            }
+                                            alt={friend.name}
+                                        />
+                                        <span>{friend.name}</span>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <span className="friendsStatus">No friends found.</span>
+                        )}
+                    </div>
+                )}
                 <div className="item">
                     <img src={Groups} alt="" />
                     <span>Groups</span>
@@ -110,10 +157,10 @@ const Leftbar = () => {
                     <img src={Videos} alt="" />
                     <span>Videos</span>
                 </div>
-                <div className="item">
+                <Link to="/messages" className="item linkItem">
                     <img src={Messages} alt="" />
                     <span>Messages</span>
-                </div>
+                </Link>
                 </div>
                 <hr />
                 <div className="menu">

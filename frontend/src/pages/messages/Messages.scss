@@ -1,0 +1,116 @@
+@import "../../style.scss";
+
+.messagesPage {
+  @include themify($themes) {
+    padding: 20px 70px;
+    background-color: themed("bgSoft");
+    min-height: 100vh;
+
+    @include mobile {
+      padding: 10px;
+    }
+
+    @include tablet {
+      padding: 20px;
+    }
+
+    .messagesShell {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 16px;
+      min-height: calc(100vh - 120px);
+
+      @include mobile {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .friendsPane,
+    .chatPane {
+      background-color: themed("bg");
+      border: 1px solid themed("border");
+      border-radius: 12px;
+      padding: 16px;
+    }
+
+    .friendsPane {
+      h2 {
+        margin: 0 0 12px;
+        font-size: 20px;
+      }
+
+      .status {
+        color: gray;
+        font-size: 14px;
+      }
+
+      .friendList {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .friendBtn {
+        border: 0;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        width: 100%;
+        text-align: left;
+        padding: 8px 10px;
+        border-radius: 8px;
+        color: themed("textColor");
+        cursor: pointer;
+
+        &:hover,
+        &.active {
+          background-color: themed("bgSoft");
+        }
+
+        img {
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+
+        span {
+          font-size: 14px;
+        }
+      }
+    }
+
+    .chatPane {
+      display: flex;
+      flex-direction: column;
+
+      .chatHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h3 {
+          margin: 0;
+          font-size: 18px;
+        }
+
+        a {
+          color: themed("textColorSoft");
+          text-decoration: none;
+          font-size: 13px;
+        }
+      }
+
+      .chatPlaceholder {
+        flex: 1;
+        display: grid;
+        place-items: center;
+        text-align: center;
+        color: themed("textColorSoft");
+        font-size: 14px;
+        padding: 24px;
+      }
+    }
+  }
+}
