@@ -3,6 +3,7 @@ import Login from './pages/login/Login';
 import Register from "./pages/register/Register";
 import Search from "./pages/search/Search";
 import PostPage from "./pages/post/Post";
+import MessagesPage from "./pages/messages/Messages";
 import {
   BrowserRouter as Router,
   Routes,
@@ -43,6 +44,7 @@ function App() {
                 <Route path="/search" element={<Search />} />
                 <Route path="/post/:id" element={<PostPage />} />
                 <Route path="/profile/:id" element={<Profile />} />
+                <Route path="/messages" element={<MessagesPage />} />
               </Routes>
             </div>
             <Rightbar />

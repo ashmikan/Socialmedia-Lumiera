@@ -157,10 +157,10 @@ const Leftbar = () => {
                     <img src={Videos} alt="" />
                     <span>Videos</span>
                 </div>
-                <div className="item">
+                <Link to="/messages" className="item linkItem">
                     <img src={Messages} alt="" />
                     <span>Messages</span>
-                </div>
+                </Link>
                 </div>
                 <hr />
                 <div className="menu">
