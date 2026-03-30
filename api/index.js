@@ -1,5 +1,7 @@
 import express from 'express';
 const app = express();
+import http from 'http';
+import { Server } from 'socket.io';
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import postRoutes from './routes/posts.js';
@@ -8,6 +10,9 @@ import likeRoutes from './routes/likes.js';
 import relationshipRoutes from './routes/relationships.js';
 import notificationRoutes from './routes/notifications.js';
 import commentLikeRoutes from './routes/commentLikes.js';
+import messageRoutes from './routes/messages.js';
+import { db } from './connect.js';
+import { setIO, registerUserSocket, removeSocket } from './socket.js';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import multer from 'multer';
@@ -51,7 +56,51 @@ app.use('/api/likes', likeRoutes)
 app.use('/api/relationships', relationshipRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/comment-likes', commentLikeRoutes)
+app.use('/api/messages', messageRoutes)
 
-app.listen(8800, ()=>{
+const ensureMessagesTable = () => {
+  const q = `
+    CREATE TABLE IF NOT EXISTS messages (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      senderId INT NOT NULL,
+      receiverId INT NOT NULL,
+      text TEXT NOT NULL,
+      createdAt DATETIME NOT NULL,
+      INDEX idx_messages_sender_receiver (senderId, receiverId),
+      INDEX idx_messages_created_at (createdAt)
+    )
+  `;
+
+  db.query(q, (err) => {
+    if (err) {
+      console.error('Failed to ensure messages table:', err);
+      return;
+    }
+    console.log('Messages table ready');
+  });
+};
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: 'http://localhost:3000',
+    credentials: true,
+  },
+});
+
+setIO(io);
+
+io.on('connection', (socket) => {
+  socket.on('register_user', (userId) => {
+    registerUserSocket(userId, socket.id);
+  });
+
+  socket.on('disconnect', () => {
+    removeSocket(socket.id);
+  });
+});
+
+server.listen(8800, ()=>{
+    ensureMessagesTable();
     console.log("API working!")
 })
