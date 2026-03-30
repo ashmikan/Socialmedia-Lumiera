@@ -78,12 +78,24 @@
         span {
           font-size: 14px;
         }
+
+        .unreadBadge {
+          margin-left: auto;
+          font-size: 10px;
+          text-transform: uppercase;
+          background-color: #e45b7a;
+          color: white;
+          border-radius: 999px;
+          padding: 3px 6px;
+          letter-spacing: 0.4px;
+        }
       }
     }
 
     .chatPane {
       display: flex;
       flex-direction: column;
+      gap: 12px;
 
       .chatHeader {
         display: flex;
@@ -110,6 +122,92 @@
         color: themed("textColorSoft");
         font-size: 14px;
         padding: 24px;
+      }
+
+      .chatMessages {
+        flex: 1;
+        min-height: 360px;
+        max-height: 60vh;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        padding: 8px 4px;
+
+        .status {
+          color: themed("textColorSoft");
+          font-size: 14px;
+          text-align: center;
+          margin: auto 0;
+        }
+
+        .messageBubble {
+          max-width: 70%;
+          padding: 10px 12px;
+          border-radius: 12px;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+
+          p {
+            margin: 0;
+            word-break: break-word;
+          }
+
+          span {
+            font-size: 11px;
+            color: themed("textColorSoft");
+          }
+
+          &.mine {
+            margin-left: auto;
+            background-color: #ec95ff;
+            color: #1f1f1f;
+          }
+
+          &.theirs {
+            margin-right: auto;
+            background-color: themed("bgSoft");
+            border: 1px solid themed("border");
+            color: themed("textColor");
+          }
+        }
+      }
+
+      .chatComposer {
+        display: flex;
+        gap: 8px;
+
+        input {
+          flex: 1;
+          border: 1px solid themed("border");
+          background-color: themed("bg");
+          color: themed("textColor");
+          border-radius: 10px;
+          padding: 10px 12px;
+          outline: none;
+        }
+
+        button {
+          border: none;
+          border-radius: 10px;
+          padding: 0 14px;
+          background-color: #4faef7;
+          color: #0f2230;
+          font-weight: 600;
+          cursor: pointer;
+
+          &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+          }
+        }
+      }
+
+      .sendError {
+        color: #d64545;
+        font-size: 12px;
+        margin: 0;
       }
     }
   }
