@@ -175,7 +175,6 @@ const Messages = () => {
                     return (
                       <div key={msg.id} className={`messageBubble ${mine ? "mine" : "theirs"}`}>
                         <p>{msg.text}</p>
-                        <span>{new Date(msg.createdAt).toLocaleString()}</span>
                       </div>
                     );
                   })
