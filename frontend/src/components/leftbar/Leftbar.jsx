@@ -23,6 +23,7 @@ const Leftbar = () => {
   const { currentUser } = useContext(AuthContext);
     const [showFriends, setShowFriends] = useState(false);
     const [showGallery, setShowGallery] = useState(false);
+        const [showVideos, setShowVideos] = useState(false);
 
     const { data: followerIds = [] } = useQuery({
         queryKey: ["leftbar-follower-ids", currentUser?.id],
@@ -51,12 +52,27 @@ const Leftbar = () => {
             makeRequest.get("/posts?userId=" + currentUser.id).then((res) => {
                 return res.data;
             }),
-        enabled: !!currentUser?.id && showGallery,
+        enabled: !!currentUser?.id && (showGallery || showVideos),
     });
 
     const galleryPosts = (myPosts || [])
         .filter((post) => !!post?.img)
         .slice(0, 12);
+
+    const videoExtensions = [".mp4", ".webm", ".mov", ".m4v", ".ogg"];
+    const videoPosts = (myPosts || [])
+        .filter((post) => {
+            if (!post?.img || typeof post.img !== "string") return false;
+            const lower = post.img.toLowerCase();
+            return videoExtensions.some((ext) => lower.includes(ext));
+        })
+        .slice(0, 10);
+
+    const getMediaSrc = (filePath) => {
+        if (!filePath) return "";
+        if (filePath.startsWith("http") || filePath.startsWith("/upload/")) return filePath;
+        return "/upload/" + filePath;
+    };
 
   return (
     <div className="leftbar">
@@ -153,10 +169,32 @@ const Leftbar = () => {
                                         )}
                                     </div>
                                 )}
-                <div className="item">
+                <div className="item clickable" onClick={() => setShowVideos((prev) => !prev)}>
                     <img src={Videos} alt="" />
-                    <span>Videos</span>
+                    <span>{showVideos ? "Hide Videos" : "Videos"}</span>
                 </div>
+                {showVideos && (
+                    <div className="videosWrap">
+                        {isGalleryLoading ? (
+                            <span className="videosStatus">Loading videos...</span>
+                        ) : videoPosts.length > 0 ? (
+                            <div className="videosList">
+                                {videoPosts.map((post) => (
+                                    <Link
+                                        key={post.id}
+                                        to={`/post/${post.id}`}
+                                        className="videoCard"
+                                        title={post.desc || "View video post"}
+                                    >
+                                        <video src={getMediaSrc(post.img)} muted preload="metadata" />
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <span className="videosStatus">No uploaded videos yet.</span>
+                        )}
+                    </div>
+                )}
                 <Link to="/messages" className="item linkItem">
                     <img src={Messages} alt="" />
                     <span>Messages</span>
