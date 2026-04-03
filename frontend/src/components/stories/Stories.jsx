@@ -1,5 +1,5 @@
 import "./Stories.scss"
-import { useContext, useRef } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AuthContext } from "../../context/authContext";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { makeRequest } from "../../axios";
@@ -8,6 +8,9 @@ const Stories = () => {
   const { currentUser } = useContext(AuthContext);
   const fileInputRef = useRef(null);
   const queryClient = useQueryClient();
+  const [viewerOpen, setViewerOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const AUTO_PLAY_MS = 5000;
 
   const normalizeUploadPath = (value) => {
     if (!value) return "";
@@ -20,6 +23,18 @@ const Stories = () => {
     queryFn: () => makeRequest.get("/statuses").then((res) => res.data),
     enabled: !!currentUser?.id,
   });
+
+  const storyItems = useMemo(() => {
+    if (!statuses || statuses.length === 0) return [];
+    return statuses.map((status) => ({
+      id: status.id,
+      name: status.name,
+      img: status.img,
+      createdAt: status.createdAt,
+      profilePic: status.profilePic,
+      userId: status.userId,
+    }));
+  }, [statuses]);
 
   const uploadStatusImage = async (file) => {
     const formData = new FormData();
@@ -53,8 +68,57 @@ const Stories = () => {
     }
   };
 
+  const closeViewer = () => {
+    setViewerOpen(false);
+  };
+
+  const openViewerAt = (index) => {
+    if (!storyItems.length) return;
+    setActiveIndex(index);
+    setViewerOpen(true);
+  };
+
+  const goNext = () => {
+    if (!storyItems.length) return;
+    if (activeIndex >= storyItems.length - 1) {
+      closeViewer();
+      return;
+    }
+    setActiveIndex((prev) => prev + 1);
+  };
+
+  const goPrev = () => {
+    if (!storyItems.length) return;
+    setActiveIndex((prev) => (prev <= 0 ? 0 : prev - 1));
+  };
+
+  useEffect(() => {
+    if (!viewerOpen || !storyItems.length) return;
+    const timer = setTimeout(() => {
+      goNext();
+    }, AUTO_PLAY_MS);
+    return () => clearTimeout(timer);
+  }, [viewerOpen, activeIndex, storyItems.length]);
+
+  useEffect(() => {
+    if (!viewerOpen) return;
+
+    const onKeyDown = (e) => {
+      if (e.key === "Escape") closeViewer();
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [viewerOpen, activeIndex, storyItems.length]);
+
+  const activeStory = storyItems[activeIndex];
+  const progressPercent = viewerOpen ? ((activeIndex + 1) / Math.max(storyItems.length, 1)) * 100 : 0;
+
 
   return (
+    <>
     <div className="stories">
         <div className="story">
                 <img src={normalizeUploadPath(currentUser.profilePic)} alt=""/>
@@ -68,13 +132,37 @@ const Stories = () => {
                   onChange={handleStatusFileChange}
                 />
             </div>
-        {statuses.map((status) => (
-            <div className="story" key={status.id}>
+        {storyItems.map((status, index) => (
+            <div className="story" key={status.id} onClick={() => openViewerAt(index)}>
                 <img src={normalizeUploadPath(status.img)} alt=""/>
                 <span>{status.name}</span>
             </div>
         ))}
     </div>
+    {viewerOpen && activeStory && (
+      <div className="storyViewerOverlay" onClick={closeViewer}>
+        <div className="storyViewer" onClick={(e) => e.stopPropagation()}>
+          <div className="progressTrack">
+            <div className="progressBar" style={{ width: `${progressPercent}%` }} />
+          </div>
+
+          <button className="closeBtn" onClick={closeViewer}>x</button>
+
+          <div className="viewerHeader">
+            <img src={normalizeUploadPath(activeStory.profilePic)} alt="" />
+            <span>{activeStory.name}</span>
+          </div>
+
+          <img className="viewerImage" src={normalizeUploadPath(activeStory.img)} alt="" />
+
+          <div className="viewerControls">
+            <button onClick={goPrev} disabled={activeIndex === 0}>Prev</button>
+            <button onClick={goNext}>{activeIndex >= storyItems.length - 1 ? "Finish" : "Next"}</button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
 
