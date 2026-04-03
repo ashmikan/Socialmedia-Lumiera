@@ -11,6 +11,7 @@ import relationshipRoutes from './routes/relationships.js';
 import notificationRoutes from './routes/notifications.js';
 import commentLikeRoutes from './routes/commentLikes.js';
 import messageRoutes from './routes/messages.js';
+import statusRoutes from './routes/statuses.js';
 import { db } from './connect.js';
 import { setIO, registerUserSocket, removeSocket } from './socket.js';
 import cors from 'cors';
@@ -57,6 +58,7 @@ app.use('/api/relationships', relationshipRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api/comment-likes', commentLikeRoutes)
 app.use('/api/messages', messageRoutes)
+app.use('/api/statuses', statusRoutes)
 
 const ensureMessagesTable = () => {
   const q = `
@@ -77,6 +79,28 @@ const ensureMessagesTable = () => {
       return;
     }
     console.log('Messages table ready');
+  });
+};
+
+const ensureStatusesTable = () => {
+  const q = `
+    CREATE TABLE IF NOT EXISTS statuses (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      userId INT NOT NULL,
+      img VARCHAR(255) NOT NULL,
+      createdAt DATETIME NOT NULL,
+      expiresAt DATETIME NOT NULL,
+      INDEX idx_statuses_user (userId),
+      INDEX idx_statuses_expires (expiresAt)
+    )
+  `;
+
+  db.query(q, (err) => {
+    if (err) {
+      console.error('Failed to ensure statuses table:', err);
+      return;
+    }
+    console.log('Statuses table ready');
   });
 };
 
@@ -102,5 +126,6 @@ io.on('connection', (socket) => {
 
 server.listen(8800, ()=>{
     ensureMessagesTable();
+  ensureStatusesTable();
     console.log("API working!")
 })

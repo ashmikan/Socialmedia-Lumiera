@@ -1,48 +1,77 @@
 import "./Stories.scss"
-import { useContext } from 'react';
+import { useContext, useRef } from "react";
 import { AuthContext } from "../../context/authContext";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { makeRequest } from "../../axios";
 
 const Stories = () => {
+  const { currentUser } = useContext(AuthContext);
+  const fileInputRef = useRef(null);
+  const queryClient = useQueryClient();
 
-  const {currentUser} = useContext(AuthContext); 
+  const normalizeUploadPath = (value) => {
+    if (!value) return "";
+    if (value.startsWith("http") || value.startsWith("/upload/")) return value;
+    return "/upload/" + value;
+  };
 
-  //TEMPORARY
-  
-  const stories = [
-    {
-      id: 1,
-      name: "John Doe",
-      img: "https://images.pexels.com/photos/13916254/pexels-photo-13916254.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
+  const { data: statuses = [] } = useQuery({
+    queryKey: ["statuses"],
+    queryFn: () => makeRequest.get("/statuses").then((res) => res.data),
+    enabled: !!currentUser?.id,
+  });
+
+  const uploadStatusImage = async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const res = await makeRequest.post("/upload", formData);
+    return res.data;
+  };
+
+  const addStatusMutation = useMutation({
+    mutationFn: (newStatus) => makeRequest.post("/statuses", newStatus),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["statuses"] });
     },
-    {
-      id: 2,
-      name: "John Doe",
-      img: "https://images.pexels.com/photos/13916254/pexels-photo-13916254.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
-    },
-    {
-      id: 3,
-      name: "John Doe",
-      img: "https://images.pexels.com/photos/13916254/pexels-photo-13916254.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
-    },
-    {
-      id: 4,
-      name: "John Doe",
-      img: "https://images.pexels.com/photos/13916254/pexels-photo-13916254.jpeg?auto=compress&cs=tinysrgb&w=1600&lazy=load",
-    },
-  ];
+  });
+
+  const handleAddStatus = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleStatusFileChange = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const uploadedFileName = await uploadStatusImage(file);
+      await addStatusMutation.mutateAsync({ img: uploadedFileName });
+    } catch (err) {
+      console.log(err);
+    } finally {
+      e.target.value = "";
+    }
+  };
 
 
   return (
     <div className="stories">
         <div className="story">
-                <img src={currentUser.profilePic} alt=""/>
+                <img src={normalizeUploadPath(currentUser.profilePic)} alt=""/>
                 <span>{currentUser.name}</span>
-                <button>+</button>
+                <button onClick={handleAddStatus} disabled={addStatusMutation.isPending}>+</button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: "none" }}
+                  onChange={handleStatusFileChange}
+                />
             </div>
-        {stories.map(story=>(
-            <div className="story" key={story.id}>
-                <img src={story.img} alt=""/>
-                <span>{story.name}</span>
+        {statuses.map((status) => (
+            <div className="story" key={status.id}>
+                <img src={normalizeUploadPath(status.img)} alt=""/>
+                <span>{status.name}</span>
             </div>
         ))}
     </div>
