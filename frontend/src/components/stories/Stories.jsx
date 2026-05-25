@@ -50,6 +50,13 @@ const Stories = () => {
     },
   });
 
+  const deleteStatusMutation = useMutation({
+    mutationFn: (statusId) => makeRequest.delete(`/statuses/${statusId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["statuses"] });
+    },
+  });
+
   const handleAddStatus = () => {
     fileInputRef.current?.click();
   };
@@ -76,6 +83,17 @@ const Stories = () => {
     if (!storyItems.length) return;
     setActiveIndex(index);
     setViewerOpen(true);
+  };
+
+  const handleDeleteStory = async (statusId) => {
+    try {
+      await deleteStatusMutation.mutateAsync(statusId);
+      if (activeIndex >= storyItems.length - 1 && storyItems.length > 1) {
+        setActiveIndex(storyItems.length - 2);
+      }
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const goNext = () => {
@@ -151,6 +169,15 @@ const Stories = () => {
           <div className="viewerHeader">
             <img src={normalizeUploadPath(activeStory.profilePic)} alt="" />
             <span>{activeStory.name}</span>
+            {currentUser?.id === activeStory.userId && (
+              <button
+                className="deleteBtn"
+                onClick={() => handleDeleteStory(activeStory.id)}
+                disabled={deleteStatusMutation.isPending}
+              >
+                Delete
+              </button>
+            )}
           </div>
 
           <img className="viewerImage" src={normalizeUploadPath(activeStory.img)} alt="" />

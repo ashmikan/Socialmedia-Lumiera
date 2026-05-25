@@ -68,3 +68,17 @@ export const addStatus = (req, res) => {
     });
   });
 };
+
+export const deleteStatus = (req, res) => {
+  getUserFromToken(req, res, (userInfo) => {
+    const statusId = Number(req.params.id);
+    if (!statusId) return res.status(400).json("Invalid status id");
+
+    const q = "DELETE FROM statuses WHERE id = ? AND userId = ?";
+    db.query(q, [statusId, userInfo.id], (err, data) => {
+      if (err) return res.status(500).json(err);
+      if (!data.affectedRows) return res.status(404).json("Status not found or not owned by current user");
+      return res.status(200).json("Status deleted successfully");
+    });
+  });
+};
