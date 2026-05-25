@@ -1,13 +1,14 @@
 import "./Messages.scss";
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { AuthContext } from "../../context/authContext";
 import { makeRequest } from "../../axios";
 import { io } from "socket.io-client";
 
 const Messages = () => {
   const { currentUser } = useContext(AuthContext);
+  const location = useLocation();
   const [activeFriendId, setActiveFriendId] = useState(null);
   const [messageText, setMessageText] = useState("");
   const [liveMessages, setLiveMessages] = useState([]);
@@ -15,6 +16,11 @@ const Messages = () => {
   const activeFriendIdRef = useRef(null);
   const chatEndRef = useRef(null);
   const queryClient = useQueryClient();
+  const selectedFriendId = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const userId = params.get("user");
+    return userId ? Number(userId) : null;
+  }, [location.search]);
 
   const { data: followerIds = [], isLoading: idsLoading } = useQuery({
     queryKey: ["messages-follower-ids", currentUser?.id],
@@ -62,6 +68,12 @@ const Messages = () => {
   useEffect(() => {
     activeFriendIdRef.current = activeFriendId;
   }, [activeFriendId]);
+
+  useEffect(() => {
+    if (selectedFriendId) {
+      setActiveFriendId(selectedFriendId);
+    }
+  }, [selectedFriendId]);
 
   useEffect(() => {
     const socket = io("http://localhost:8800", { transports: ["websocket"] });

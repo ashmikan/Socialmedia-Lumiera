@@ -10,7 +10,7 @@ import MoreVertIcon from "@mui/icons-material/MoreVert";
 import Posts from "../../components/posts/Posts"
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { makeRequest } from "../../axios";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import { AuthContext } from "../../context/authContext";
 import Update from "../../components/update/Update";
@@ -20,6 +20,7 @@ const Profile = () => {
   const [openUpdate, setOpenUpdate] = useState(false);
 
   const { currentUser } = useContext(AuthContext);
+  const navigate = useNavigate();
   const urlUserId = useLocation().pathname.split("/")[2];
   const userId = urlUserId === "me" ? currentUser?.id : urlUserId;
 
@@ -107,7 +108,7 @@ const Profile = () => {
             )}
           </div>
           <div className="right">
-            <EmailOutlinedIcon />
+            <EmailOutlinedIcon onClick={() => navigate(`/messages?user=${userId}`)} style={{ cursor: "pointer" }} />
             <MoreVertIcon />
           </div>
         </div>
